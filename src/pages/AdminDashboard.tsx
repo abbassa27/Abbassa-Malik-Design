@@ -1104,7 +1104,8 @@ export default function AdminDashboard() {
         {/* # NEW FEATURE END */}
 
         {activeTab === "stats" && adminSecret && <AnalyticsDashboard secret={adminSecret} />}
-        {activeTab === "orders" && <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {activeTab === "orders" && (
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Clients sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white/[0.02] border border-white/[0.07] rounded-3xl overflow-hidden">
@@ -1211,7 +1212,7 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-
+)}
         </div>}
 
         <a href="/" className="flex items-center gap-2 text-slate-500 hover:text-slate-300 text-sm mt-8 transition-colors w-fit">
