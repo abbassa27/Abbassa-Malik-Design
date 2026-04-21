@@ -43,4 +43,8 @@ export function verifyToken(token: string): boolean {
     return false;
   }
 }
+// أضف الدالة الجديدة هنا:
+export function verifyAdminToken(token: string): boolean {
+  return verifyToken(token);
+}
 // NEW FEATURE END (v3)
