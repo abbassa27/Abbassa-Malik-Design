@@ -1200,26 +1200,25 @@ export default function AdminDashboard() {
                           <StatusBadge status={order.status} />
                           <button onClick={() => setSelectedOrder({ client, order })}
                             className="flex items-center gap-1.5 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/40 text-violet-400 text-xs font-bold px-3 py-2 rounded-lg transition-all">
-                            <Eye className="w-3.5 h-3.5" />
-                            Manage
-                          </button>
-                        </div>
+                           <Eye className="w-3.5 h-3.5" />
+                          Manage
+                        </button>
                       </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </div>
-)}
-        </div>}
+      </div>
+    )}
 
-        <a href="/" className="flex items-center gap-2 text-slate-500 hover:text-slate-300 text-sm mt-8 transition-colors w-fit">
-          <ArrowLeft className="w-4 h-4" />
-          Back to main site
-        </a>
-      </main>
+    <a href="/" className="flex items-center gap-2 text-slate-500 hover:text-slate-300 text-sm mt-8 transition-colors w-fit">
+      <ArrowLeft className="w-4 h-4" />
+      Back to main site
+    </a>
+  </main>
 
       {/* # NEW FEATURE START - admin chat */}
       {chatOrder && adminSecret && <AdminChatPanel order={chatOrder} secret={adminSecret} onClose={() => setChatOrder(null)} />}
