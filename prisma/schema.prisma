@@ -1,0 +1,116 @@
+// # NEW FEATURE START - PostgreSQL Schema (Neon + Prisma)
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Clients ─────────────────────────────────────────────────────────────────
+model Client {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+
+  orders   Order[]
+  messages Message[]
+  logs     Log[]
+}
+
+// ─── Orders ──────────────────────────────────────────────────────────────────
+model Order {
+  id           String      @id @default(cuid())
+  clientId     String
+  bookTitle    String
+  plan         String
+  instructions String?
+  status       OrderStatus @default(PENDING)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  client       Client       @relation(fields: [clientId], references: [id])
+  files        OrderFile[]
+  deliverables Deliverable[]
+  messages     Message[]
+  logs         Log[]
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  REVISION
+  COMPLETED
+}
+
+// ─── Order Files (uploaded by client) ────────────────────────────────────────
+model OrderFile {
+  id         String   @id @default(cuid())
+  orderId    String
+  name       String
+  size       Int
+  mimeType   String
+  url        String   // Secure CDN/storage URL
+  uploadedAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ─── Deliverables (uploaded by admin) ────────────────────────────────────────
+model Deliverable {
+  id         String   @id @default(cuid())
+  orderId    String
+  name       String
+  size       Int
+  url        String   // Secure CDN/storage URL
+  uploadedAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ─── Messages (client ↔ admin) ───────────────────────────────────────────────
+model Message {
+  id        String      @id @default(cuid())
+  orderId   String
+  clientId  String
+  sender    MessageSender
+  content   String
+  read      Boolean     @default(false)
+  createdAt DateTime    @default(now())
+
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id])
+}
+
+enum MessageSender {
+  CLIENT
+  ADMIN
+}
+
+// ─── Event Logs ──────────────────────────────────────────────────────────────
+model Log {
+  id        String   @id @default(cuid())
+  event     LogEvent
+  orderId   String?
+  clientId  String?
+  meta      Json?    // Extra event metadata
+  createdAt DateTime @default(now())
+
+  order  Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  client Client? @relation(fields: [clientId], references: [id])
+}
+
+enum LogEvent {
+  CLIENT_REGISTERED
+  ORDER_CREATED
+  CLIENT_UPLOADED      // client uploaded book files
+  ADMIN_UPLOADED       // admin uploaded deliverables
+  STATUS_CHANGED
+  MESSAGE_SENT
+  CLIENT_DOWNLOADED
+}
+// # NEW FEATURE END - PostgreSQL Schema
