@@ -123,7 +123,10 @@ export default function Hero() {
                 The Mindset of a Champion
               </p>
               <p className="text-white/45 text-sm mb-8">Premium cover mockup · KDP-ready</p>
-              <div className="w-32 h-44 rounded-md bg-gradient-to-br from-gold/30 to-gold-deep/40 border border-gold/40 shadow-inner" />
+              <img
+  src="/my-cover.Png"
+  className="w-32 h-44 object-cover rounded-md border border-gold/40"
+/>
             </div>
           </div>
         </motion.div>
