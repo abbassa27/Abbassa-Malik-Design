@@ -1,7 +1,8 @@
-// NEW FEATURE START (v6 — Resend Email Helper)
-import { Resend } from "resend";
+// NEW FEATURE START (v7 — FULL SAFE RESEND)
 
-// ✅ NEW FEATURE START - SAFE RESEND INIT
+// ❌ لا يوجد import هنا
+
+// ✅ SAFE INIT (LAZY LOAD)
 function getResendClient() {
   const key = process.env.RESEND_API_KEY;
 
@@ -10,9 +11,9 @@ function getResendClient() {
     return null;
   }
 
+  const { Resend } = require("resend"); // 🔥 الحل هنا
   return new Resend(key);
 }
-// ✅ NEW FEATURE END
 
 const FROM = `${process.env.RESEND_FROM_NAME || "Abbassa Malik"} <${process.env.RESEND_FROM_EMAIL || "invoices@abbassa-malik.com"}>`;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://abbassa-malik.com";
@@ -40,43 +41,35 @@ export async function sendInvoiceEmail(inv: {
   const fmt = (n: number) => `${inv.currency} ${n.toFixed(2)}`;
 
   const rows = inv.items.map((it) => `
-    <tr style="border-bottom:1px solid #f0e8d5;">
-      <td style="padding:10px 8px;color:#2c2c2c;font-size:14px;">${it.description}</td>
-      <td style="padding:10px 8px;text-align:center;font-size:14px;">${it.quantity}</td>
-      <td style="padding:10px 8px;text-align:right;font-size:14px;">${fmt(it.unitPrice)}</td>
-      <td style="padding:10px 8px;text-align:right;color:#c9a84c;font-weight:700;font-size:14px;">${fmt(it.total)}</td>
+    <tr>
+      <td>${it.description}</td>
+      <td>${it.quantity}</td>
+      <td>${fmt(it.unitPrice)}</td>
+      <td>${fmt(it.total)}</td>
     </tr>
   `).join("");
 
-  const html = `<!DOCTYPE html><html><body style="margin:0;background:#fafaf8;font-family:Georgia,serif;">
-  <div style="max-width:620px;margin:32px auto;background:#fff;border-radius:16px;overflow:hidden;">
-    <div style="background:#1a1a1a;padding:40px;">
-      <h1 style="color:#c9a84c;">ABBASSA MALIK</h1>
-    </div>
-    <div style="padding:40px;">
-      <p>Dear <strong>${inv.clientName}</strong>,</p>
-      <table width="100%">${rows}</table>
-      <p>Total: ${fmt(inv.total)}</p>
-      <a href="${BASE_URL}/invoice/${inv.id}">View Invoice</a>
-    </div>
-  </div>
+  const html = `<html><body>
+    <h2>Invoice ${inv.invoiceNumber}</h2>
+    <p>Hello ${inv.clientName}</p>
+    <table>${rows}</table>
+    <p>Total: ${fmt(inv.total)}</p>
+    <a href="${BASE_URL}/invoice/${inv.id}">View Invoice</a>
   </body></html>`;
 
-  // ✅ NEW FEATURE START - SAFE SEND
   const resend = getResendClient();
 
   if (!resend) {
-    console.log("Email skipped (no API key)");
+    console.log("Email skipped");
     return { skipped: true };
   }
 
   return resend.emails.send({
     from: FROM,
     to: inv.clientEmail,
-    subject: `Invoice ${inv.invoiceNumber} from Abbassa Malik`,
+    subject: `Invoice ${inv.invoiceNumber}`,
     html,
   });
-  // ✅ NEW FEATURE END
 }
 
 export async function sendSubscriptionConfirmEmail(sub: {
@@ -103,4 +96,5 @@ export async function sendSubscriptionConfirmEmail(sub: {
     html,
   });
 }
-// NEW FEATURE END (v6)
+
+// NEW FEATURE END (v7)
