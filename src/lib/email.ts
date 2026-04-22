@@ -1,7 +1,18 @@
 // NEW FEATURE START (v6 — Resend Email Helper)
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// ✅ NEW FEATURE START - SAFE RESEND INIT
+function getResendClient() {
+  const key = process.env.RESEND_API_KEY;
+
+  if (!key) {
+    console.warn("⚠️ RESEND_API_KEY missing - emails disabled");
+    return null;
+  }
+
+  return new Resend(key);
+}
+// ✅ NEW FEATURE END
 const FROM = `${process.env.RESEND_FROM_NAME || "Abbassa Malik"} <${process.env.RESEND_FROM_EMAIL || "invoices@abbassa-malik.com"}>`;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://abbassa-malik.com";
 

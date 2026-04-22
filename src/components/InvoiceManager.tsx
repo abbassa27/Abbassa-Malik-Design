@@ -42,11 +42,11 @@ const STATUS_CFG: Record<
   string,
   { label: string; color: string; bg: string; icon: React.ElementType }
 > = {
-  draft:     { label: "Draft",     color: "text-muted",     bg: "bg-cream",     icon: Clock },
-  sent:      { label: "Sent",      color: "text-blue-600",  bg: "bg-blue-50",   icon: FileText },
-  paid:      { label: "Paid",      color: "text-green-700", bg: "bg-green-50",  icon: CheckCircle },
-  overdue:   { label: "Overdue",   color: "text-red-600",   bg: "bg-red-50",    icon: AlertCircle },
-  cancelled: { label: "Cancelled", color: "text-muted",     bg: "bg-cream",     icon: XCircle },
+  draft:     { label: "Draft",     color: "text-white/50",     bg: "bg-white/5 border border-white/10",     icon: Clock },
+  sent:      { label: "Sent",      color: "text-sky-300",  bg: "bg-sky-500/15 border border-sky-500/25",   icon: FileText },
+  paid:      { label: "Paid",      color: "text-emerald-300", bg: "bg-emerald-500/15 border border-emerald-500/25",  icon: CheckCircle },
+  overdue:   { label: "Overdue",   color: "text-red-300",   bg: "bg-red-500/15 border border-red-500/25",    icon: AlertCircle },
+  cancelled: { label: "Cancelled", color: "text-white/45",     bg: "bg-white/5 border border-white/10",     icon: XCircle },
 };
 
 const EMPTY_ITEM: InvoiceItem = { description: "", quantity: 1, unitPrice: 0, total: 0 };
@@ -211,8 +211,8 @@ export default function InvoiceManager() {
       {/* ── Header ── */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-charcoal">Invoices</h2>
-          <p className="text-muted text-sm mt-0.5">Create, send & track client invoices</p>
+          <h2 className="font-serif text-2xl font-bold text-white">Invoices</h2>
+          <p className="text-white/50 text-sm mt-0.5">Create, send & track client invoices</p>
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
@@ -227,19 +227,19 @@ export default function InvoiceManager() {
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: "Total Invoices", value: stats.total,         icon: FileText,     color: "text-charcoal" },
+            { label: "Total Invoices", value: stats.total,         icon: FileText,     color: "text-white" },
             { label: "Collected",      value: fmt(stats.collected), icon: DollarSign,   color: "text-gold" },
             {
               label: "Paid",
               value: stats.byStatus.find((s) => s.status === "paid")?.count ?? 0,
               icon: CheckCircle,
-              color: "text-green-600",
+              color: "text-emerald-300",
             },
             {
               label: "Pending",
               value: stats.byStatus.find((s) => s.status === "sent")?.count ?? 0,
               icon: Clock,
-              color: "text-blue-600",
+              color: "text-sky-300",
             },
           ].map((k, i) => (
             <motion.div
@@ -247,10 +247,10 @@ export default function InvoiceManager() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.07 }}
-              className="bg-white rounded-2xl p-5 border border-gold-light/50"
+              className="bg-white/[0.04] rounded-2xl p-5 border border-white/10"
             >
               <div className="flex items-center justify-between mb-2">
-                <p className="text-muted text-xs font-medium uppercase tracking-wide">{k.label}</p>
+                <p className="text-white/45 text-xs font-medium uppercase tracking-wide">{k.label}</p>
                 <k.icon size={15} className={k.color} />
               </div>
               <p className={`font-serif text-2xl font-bold ${k.color}`}>{k.value}</p>
@@ -266,15 +266,15 @@ export default function InvoiceManager() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white rounded-2xl border border-gold-light/50 p-6 overflow-hidden"
+            className="bg-white/[0.04] rounded-2xl border border-white/10 p-6 overflow-hidden"
           >
             <div className="flex items-center justify-between mb-5">
-              <h3 className="font-semibold text-charcoal text-lg">Create New Invoice</h3>
+              <h3 className="font-semibold text-white text-lg">Create New Invoice</h3>
               <button
                 onClick={() => setShowCreate(false)}
-                className="w-8 h-8 rounded-full hover:bg-cream flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"
               >
-                <X size={14} className="text-muted" />
+                <X size={14} className="text-white/45" />
               </button>
             </div>
 
@@ -283,7 +283,7 @@ export default function InvoiceManager() {
               {/* Client Info */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
+                  <label className="block text-xs font-semibold text-white/45 uppercase tracking-wide mb-1.5">
                     Client Name *
                   </label>
                   <input
@@ -291,12 +291,12 @@ export default function InvoiceManager() {
                     value={form.clientName}
                     onChange={(e) => setForm({ ...form, clientName: e.target.value })}
                     placeholder="John Smith"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gold-light/60 bg-cream
-                               focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-charcoal"
+                    className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-white/[0.05]
+                               focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-white placeholder:text-white/35"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
+                  <label className="block text-xs font-semibold text-white/45 uppercase tracking-wide mb-1.5">
                     Client Email *
                   </label>
                   <input
@@ -305,19 +305,19 @@ export default function InvoiceManager() {
                     value={form.clientEmail}
                     onChange={(e) => setForm({ ...form, clientEmail: e.target.value })}
                     placeholder="client@email.com"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gold-light/60 bg-cream
-                               focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-charcoal"
+                    className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-white/[0.05]
+                               focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-white placeholder:text-white/35"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
+                  <label className="block text-xs font-semibold text-white/45 uppercase tracking-wide mb-1.5">
                     Currency
                   </label>
                   <select
                     value={form.currency}
                     onChange={(e) => setForm({ ...form, currency: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gold-light/60 bg-cream
-                               focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-charcoal"
+                    className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-white/[0.05]
+                               focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-white placeholder:text-white/35"
                   >
                     <option>USD</option>
                     <option>EUR</option>
@@ -326,15 +326,15 @@ export default function InvoiceManager() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
+                  <label className="block text-xs font-semibold text-white/45 uppercase tracking-wide mb-1.5">
                     Due Date
                   </label>
                   <input
                     type="date"
                     value={form.dueDate}
                     onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gold-light/60 bg-cream
-                               focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-charcoal"
+                    className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-white/[0.05]
+                               focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-white placeholder:text-white/35"
                   />
                 </div>
               </div>
@@ -342,7 +342,7 @@ export default function InvoiceManager() {
               {/* Line Items */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <label className="text-xs font-semibold text-muted uppercase tracking-wide">
+                  <label className="text-xs font-semibold text-white/45 uppercase tracking-wide">
                     Line Items
                   </label>
                   <button
@@ -356,10 +356,10 @@ export default function InvoiceManager() {
 
                 {/* Column headers */}
                 <div className="grid grid-cols-12 gap-2 mb-1 px-1">
-                  <span className="col-span-5 text-xs text-muted">Description</span>
-                  <span className="col-span-2 text-xs text-muted text-center">Qty</span>
-                  <span className="col-span-2 text-xs text-muted text-right">Unit Price</span>
-                  <span className="col-span-2 text-xs text-muted text-right">Total</span>
+                  <span className="col-span-5 text-xs text-white/45">Description</span>
+                  <span className="col-span-2 text-xs text-white/45 text-center">Qty</span>
+                  <span className="col-span-2 text-xs text-white/45 text-right">Unit Price</span>
+                  <span className="col-span-2 text-xs text-white/45 text-right">Total</span>
                   <span className="col-span-1" />
                 </div>
 
@@ -370,16 +370,16 @@ export default function InvoiceManager() {
                         value={it.description}
                         onChange={(e) => updateItem(i, "description", e.target.value)}
                         placeholder="Service description"
-                        className="col-span-5 px-3 py-2 rounded-lg border border-gold-light/50 bg-cream
-                                   text-sm text-charcoal focus:outline-none focus:ring-1 focus:ring-gold/30"
+                        className="col-span-5 px-3 py-2 rounded-lg border border-white/15 bg-white/[0.05]
+                                   text-sm text-white focus:outline-none focus:ring-1 focus:ring-gold/30 placeholder:text-white/35"
                       />
                       <input
                         type="number"
                         min="1"
                         value={it.quantity}
                         onChange={(e) => updateItem(i, "quantity", e.target.value)}
-                        className="col-span-2 px-3 py-2 rounded-lg border border-gold-light/50 bg-cream
-                                   text-sm text-charcoal focus:outline-none focus:ring-1 focus:ring-gold/30 text-center"
+                        className="col-span-2 px-3 py-2 rounded-lg border border-white/15 bg-white/[0.05]
+                                   text-sm text-white focus:outline-none focus:ring-1 focus:ring-gold/30 text-center"
                       />
                       <input
                         type="number"
@@ -387,8 +387,8 @@ export default function InvoiceManager() {
                         step="0.01"
                         value={it.unitPrice}
                         onChange={(e) => updateItem(i, "unitPrice", e.target.value)}
-                        className="col-span-2 px-3 py-2 rounded-lg border border-gold-light/50 bg-cream
-                                   text-sm text-charcoal focus:outline-none focus:ring-1 focus:ring-gold/30 text-right"
+                        className="col-span-2 px-3 py-2 rounded-lg border border-white/15 bg-white/[0.05]
+                                   text-sm text-white focus:outline-none focus:ring-1 focus:ring-gold/30 text-right"
                       />
                       <div className="col-span-2 text-right text-sm font-semibold text-gold">
                         {fmt(it.total, form.currency)}
@@ -396,7 +396,7 @@ export default function InvoiceManager() {
                       <button
                         type="button"
                         onClick={() => setItems(items.filter((_, idx) => idx !== i))}
-                        className="col-span-1 w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors"
+                        className="col-span-1 w-7 h-7 rounded-lg hover:bg-red-500/15 flex items-center justify-center transition-colors"
                       >
                         <Trash2 size={12} className="text-red-400" />
                       </button>
@@ -408,7 +408,7 @@ export default function InvoiceManager() {
               {/* Tax + Totals */}
               <div className="flex flex-wrap items-end gap-6">
                 <div className="flex-1 min-w-[140px]">
-                  <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
+                  <label className="block text-xs font-semibold text-white/45 uppercase tracking-wide mb-1.5">
                     Tax (%)
                   </label>
                   <input
@@ -418,23 +418,23 @@ export default function InvoiceManager() {
                     step="0.1"
                     value={form.tax}
                     onChange={(e) => setForm({ ...form, tax: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gold-light/60 bg-cream
-                               focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-charcoal"
+                    className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-white/[0.05]
+                               focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-white placeholder:text-white/35"
                   />
                 </div>
                 <div className="text-right space-y-1 min-w-[200px]">
                   <div className="flex justify-between text-sm gap-8">
-                    <span className="text-muted">Subtotal</span>
-                    <span className="font-medium text-charcoal">{fmt(subtotal, form.currency)}</span>
+                    <span className="text-white/45">Subtotal</span>
+                    <span className="font-medium text-white">{fmt(subtotal, form.currency)}</span>
                   </div>
                   {taxAmount > 0 && (
                     <div className="flex justify-between text-sm gap-8">
-                      <span className="text-muted">Tax ({form.tax}%)</span>
-                      <span className="font-medium text-charcoal">{fmt(taxAmount, form.currency)}</span>
+                      <span className="text-white/45">Tax ({form.tax}%)</span>
+                      <span className="font-medium text-white">{fmt(taxAmount, form.currency)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-base font-bold border-t border-gold pt-1 gap-8">
-                    <span className="text-charcoal">Total</span>
+                  <div className="flex justify-between text-base font-bold border-t border-white/15 pt-1 gap-8">
+                    <span className="text-white">Total</span>
                     <span className="text-gold">{fmt(total, form.currency)}</span>
                   </div>
                 </div>
@@ -442,16 +442,16 @@ export default function InvoiceManager() {
 
               {/* Notes */}
               <div>
-                <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
-                  Notes <span className="text-muted font-normal">(optional)</span>
+                <label className="block text-xs font-semibold text-white/45 uppercase tracking-wide mb-1.5">
+                  Notes <span className="text-white/40 font-normal">(optional)</span>
                 </label>
                 <textarea
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
                   rows={2}
                   placeholder="Payment terms, special instructions..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-gold-light/60 bg-cream
-                             focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-charcoal resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-white/[0.05]
+                             focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-white resize-none placeholder:text-white/35"
                 />
               </div>
 
@@ -483,10 +483,10 @@ export default function InvoiceManager() {
           <button
             key={s}
             onClick={() => setFilter(s)}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold capitalize transition-all
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold capitalize transition-all border
               ${filter === s
-                ? "bg-charcoal text-white"
-                : "bg-cream text-muted hover:bg-gold/10 hover:text-charcoal"
+                ? "bg-gold text-void border-gold"
+                : "bg-white/[0.05] text-white/50 border-white/10 hover:border-gold/35 hover:text-gold"
               }`}
           >
             {s}
@@ -500,10 +500,10 @@ export default function InvoiceManager() {
           <div className="w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-gold-light/50">
+        <div className="text-center py-16 bg-white/[0.04] rounded-2xl border border-white/10">
           <FileText size={40} className="text-gold/30 mx-auto mb-3" />
-          <p className="text-muted font-medium">No invoices found.</p>
-          <p className="text-muted/60 text-sm mt-1">Create your first invoice above.</p>
+          <p className="text-white/50 font-medium">No invoices found.</p>
+          <p className="text-white/35 text-sm mt-1">Create your first invoice above.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -518,12 +518,12 @@ export default function InvoiceManager() {
                 layout
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="bg-white rounded-2xl border border-gold-light/50 p-5 hover:shadow-md transition-shadow"
+                className="bg-white/[0.04] rounded-2xl border border-white/10 p-5 hover:border-gold/20 transition-colors"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="font-mono text-xs font-bold text-charcoal bg-cream px-2 py-0.5 rounded">
+                      <span className="font-mono text-xs font-bold text-gold bg-white/10 px-2 py-0.5 rounded border border-white/10">
                         {inv.invoiceNumber}
                       </span>
                       <span
@@ -532,9 +532,9 @@ export default function InvoiceManager() {
                         <StatusIcon size={11} /> {sc.label}
                       </span>
                     </div>
-                    <p className="font-semibold text-charcoal text-base">{inv.clientName}</p>
-                    <p className="text-muted text-sm">{inv.clientEmail}</p>
-                    <p className="text-muted text-xs mt-1">
+                    <p className="font-semibold text-white text-base">{inv.clientName}</p>
+                    <p className="text-white/50 text-sm">{inv.clientEmail}</p>
+                    <p className="text-white/40 text-xs mt-1">
                       {parsedItems.length} item{parsedItems.length !== 1 ? "s" : ""}
                       &nbsp;·&nbsp; Issued {new Date(inv.createdAt).toLocaleDateString()}
                       {inv.dueDate ? ` · Due ${new Date(inv.dueDate).toLocaleDateString()}` : ""}
@@ -545,7 +545,7 @@ export default function InvoiceManager() {
                       {fmt(inv.total, inv.currency)}
                     </p>
                     {inv.paidAt && (
-                      <p className="text-xs text-green-600 mt-0.5">
+                      <p className="text-xs text-emerald-400 mt-0.5">
                         Paid {new Date(inv.paidAt).toLocaleDateString()}
                       </p>
                     )}
@@ -558,8 +558,8 @@ export default function InvoiceManager() {
                     href={`/invoice/${inv.id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-1.5 text-xs font-semibold text-charcoal
-                               border border-gold-light px-3 py-1.5 rounded-full hover:border-gold transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-semibold text-white
+                               border border-white/15 px-3 py-1.5 rounded-full hover:border-gold/40 hover:text-gold transition-colors"
                   >
                     <Eye size={12} /> View
                   </a>
@@ -568,8 +568,8 @@ export default function InvoiceManager() {
                     <button
                       onClick={() => handleSend(inv.id)}
                       disabled={sending === inv.id}
-                      className="flex items-center gap-1.5 text-xs font-semibold text-blue-600
-                                 border border-blue-200 px-3 py-1.5 rounded-full hover:bg-blue-50
+                      className="flex items-center gap-1.5 text-xs font-semibold text-sky-300
+                                 border border-sky-500/30 px-3 py-1.5 rounded-full hover:bg-sky-500/10
                                  transition-colors disabled:opacity-60"
                     >
                       {sending === inv.id ? (
@@ -585,8 +585,8 @@ export default function InvoiceManager() {
                     <button
                       onClick={() => handleMarkPaid(inv.id)}
                       disabled={marking === inv.id}
-                      className="flex items-center gap-1.5 text-xs font-semibold text-green-700
-                                 border border-green-200 px-3 py-1.5 rounded-full hover:bg-green-50
+                      className="flex items-center gap-1.5 text-xs font-semibold text-emerald-300
+                                 border border-emerald-500/30 px-3 py-1.5 rounded-full hover:bg-emerald-500/10
                                  transition-colors disabled:opacity-60"
                     >
                       {marking === inv.id ? (

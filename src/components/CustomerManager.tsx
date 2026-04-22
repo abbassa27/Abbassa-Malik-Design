@@ -229,18 +229,18 @@ export default function CustomerManager() {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: "Total Clients",   value: totalCustomers,          icon: Users,    color: "text-charcoal" },
+          { label: "Total Clients",   value: totalCustomers,          icon: Users,    color: "text-white" },
           { label: "Total Revenue",   value: `$${totalRevenue.toFixed(0)}`, icon: FileText, color: "text-gold" },
-          { label: "Avg. Spend",      value: `$${avgSpend.toFixed(0)}`,    icon: Package,  color: "text-charcoal" },
-          { label: "Repeat Clients",  value: repeatClients,           icon: RefreshCw, color: "text-green-600" },
+          { label: "Avg. Spend",      value: `$${avgSpend.toFixed(0)}`,    icon: Package,  color: "text-white/90" },
+          { label: "Repeat Clients",  value: repeatClients,           icon: RefreshCw, color: "text-emerald-300" },
         ].map((k, i) => (
           <motion.div
             key={k.label}
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
-            className="bg-white rounded-2xl p-5 border border-gold-light/50"
+            className="bg-white/[0.04] rounded-2xl p-5 border border-white/10"
           >
             <div className="flex items-center justify-between mb-2">
-              <p className="text-muted text-xs font-medium uppercase tracking-wide">{k.label}</p>
+              <p className="text-white/45 text-xs font-medium uppercase tracking-wide">{k.label}</p>
               <k.icon size={15} className={k.color} />
             </div>
             <p className={`font-serif text-2xl font-bold ${k.color}`}>{k.value}</p>
@@ -251,21 +251,21 @@ export default function CustomerManager() {
       {/* Search + Filter */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="flex-1 min-w-[200px] relative">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email or service..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gold-light/60 bg-white
-                       focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-charcoal"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-white/15 bg-white/[0.05]
+                       focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-white placeholder:text-white/35"
           />
         </div>
         <div className="flex items-center gap-2">
-          <Filter size={14} className="text-muted" />
+          <Filter size={14} className="text-white/45" />
           <select
             value={filterPlan}
             onChange={(e) => setFilterPlan(e.target.value)}
-            className="px-3 py-2.5 rounded-xl border border-gold-light/60 bg-white text-sm text-charcoal
+            className="px-3 py-2.5 rounded-xl border border-white/15 bg-white/[0.05] text-sm text-white
                        focus:outline-none focus:ring-2 focus:ring-gold/30"
           >
             <option value="all">All Plans</option>
@@ -282,49 +282,49 @@ export default function CustomerManager() {
           <div className="w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-gold-light/50">
+        <div className="text-center py-16 bg-white/[0.04] rounded-2xl border border-white/10">
           <Users size={40} className="text-gold/30 mx-auto mb-3" />
-          <p className="text-muted font-medium">No customers found.</p>
+          <p className="text-white/50 font-medium">No customers found.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gold-light/50 overflow-hidden">
+        <div className="bg-white/[0.04] rounded-2xl border border-white/10 overflow-hidden">
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-2 px-5 py-3 bg-cream border-b border-gold-light/30">
+          <div className="grid grid-cols-12 gap-2 px-5 py-3 bg-white/[0.06] border-b border-white/10">
             <button
               onClick={() => toggleSort("name")}
-              className="col-span-3 flex items-center gap-1 text-left text-xs font-semibold text-muted uppercase tracking-wide hover:text-charcoal transition-colors"
+              className="col-span-3 flex items-center gap-1 text-left text-xs font-semibold text-white/45 uppercase tracking-wide hover:text-gold transition-colors"
             >
               <Users size={11} /> Client <SortIcon col="name" />
             </button>
-            <span className="col-span-3 text-xs font-semibold text-muted uppercase tracking-wide flex items-center gap-1">
+            <span className="col-span-3 text-xs font-semibold text-white/45 uppercase tracking-wide flex items-center gap-1">
               <Mail size={11} /> Email
             </span>
             <button
               onClick={() => toggleSort("lastSeen")}
-              className="col-span-2 flex items-center gap-1 text-left text-xs font-semibold text-muted uppercase tracking-wide hover:text-charcoal transition-colors"
+              className="col-span-2 flex items-center gap-1 text-left text-xs font-semibold text-white/45 uppercase tracking-wide hover:text-gold transition-colors"
             >
               <Calendar size={11} /> Last Order <SortIcon col="lastSeen" />
             </button>
-            <span className="col-span-2 text-xs font-semibold text-muted uppercase tracking-wide flex items-center gap-1">
+            <span className="col-span-2 text-xs font-semibold text-white/45 uppercase tracking-wide flex items-center gap-1">
               <Package size={11} /> Services
             </span>
             <button
               onClick={() => toggleSort("spent")}
-              className="col-span-1 flex items-center gap-1 text-right text-xs font-semibold text-muted uppercase tracking-wide hover:text-charcoal transition-colors justify-end"
+              className="col-span-1 flex items-center gap-1 text-right text-xs font-semibold text-white/45 uppercase tracking-wide hover:text-gold transition-colors justify-end"
             >
               Spent <SortIcon col="spent" />
             </button>
-            <span className="col-span-1 text-xs font-semibold text-muted uppercase tracking-wide text-right">
+            <span className="col-span-1 text-xs font-semibold text-white/45 uppercase tracking-wide text-right">
               Actions
             </span>
           </div>
 
           {/* Table Rows */}
-          <div className="divide-y divide-gold-light/20">
+          <div className="divide-y divide-white/10">
             {filtered.map((customer) => (
               <div key={customer.email}>
                 {/* Row */}
-                <div className="grid grid-cols-12 gap-2 px-5 py-4 hover:bg-cream/40 transition-colors items-center">
+                <div className="grid grid-cols-12 gap-2 px-5 py-4 hover:bg-white/[0.04] transition-colors items-center">
                   {/* Name */}
                   <div className="col-span-3 flex items-center gap-2 min-w-0">
                     <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center flex-shrink-0">
@@ -333,8 +333,8 @@ export default function CustomerManager() {
                       </span>
                     </div>
                     <div className="min-w-0">
-                      <p className="font-semibold text-charcoal text-sm truncate">{customer.name}</p>
-                      <p className="text-muted text-xs">
+                      <p className="font-semibold text-white text-sm truncate">{customer.name}</p>
+                      <p className="text-white/45 text-xs">
                         {customer.orderCount} order{customer.orderCount !== 1 ? "s" : ""}
                         {customer.invoiceCount > 0 && ` · ${customer.invoiceCount} inv.`}
                       </p>
@@ -343,15 +343,15 @@ export default function CustomerManager() {
 
                   {/* Email */}
                   <div className="col-span-3 min-w-0">
-                    <p className="text-sm text-muted truncate">{customer.email}</p>
-                    <p className="text-xs text-muted/60">
+                    <p className="text-sm text-white/50 truncate">{customer.email}</p>
+                    <p className="text-xs text-white/35">
                       Since {new Date(customer.firstSeen).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
                     </p>
                   </div>
 
                   {/* Last Seen */}
                   <div className="col-span-2">
-                    <p className="text-sm text-charcoal">
+                    <p className="text-sm text-white/90">
                       {new Date(customer.lastSeen).toLocaleDateString("en-GB", {
                         day: "numeric", month: "short", year: "numeric",
                       })}
@@ -369,7 +369,7 @@ export default function CustomerManager() {
                       </span>
                     ))}
                     {customer.services.length > 2 && (
-                      <span className="text-xs text-muted">+{customer.services.length - 2}</span>
+                      <span className="text-xs text-white/40">+{customer.services.length - 2}</span>
                     )}
                   </div>
 
@@ -385,14 +385,14 @@ export default function CustomerManager() {
                       title="View details"
                       className="w-7 h-7 rounded-lg hover:bg-gold/10 flex items-center justify-center transition-colors"
                     >
-                      <Eye size={13} className="text-muted" />
+                      <Eye size={13} className="text-white/45" />
                     </button>
                     <button
                       onClick={() => handleCreateInvoice(customer)}
                       title="Create invoice"
-                      className="w-7 h-7 rounded-lg hover:bg-blue-50 flex items-center justify-center transition-colors"
+                      className="w-7 h-7 rounded-lg hover:bg-sky-500/15 flex items-center justify-center transition-colors"
                     >
-                      <Plus size={13} className="text-blue-500" />
+                      <Plus size={13} className="text-sky-400" />
                     </button>
                   </div>
                 </div>
@@ -404,33 +404,33 @@ export default function CustomerManager() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden border-t border-gold-light/20 bg-cream/40"
+                      className="overflow-hidden border-t border-white/10 bg-white/[0.03]"
                     >
                       <div className="px-5 py-5 grid sm:grid-cols-2 gap-6">
 
                         {/* Orders History */}
                         <div>
-                          <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-3 flex items-center gap-1">
+                          <p className="text-xs font-semibold text-white/45 uppercase tracking-wide mb-3 flex items-center gap-1">
                             <Package size={11} /> Order History ({customer.orders.length})
                           </p>
                           {customer.orders.length === 0 ? (
-                            <p className="text-muted text-sm">No orders.</p>
+                            <p className="text-white/45 text-sm">No orders.</p>
                           ) : (
                             <div className="space-y-2">
                               {customer.orders.map((o) => (
                                 <div
                                   key={o.id}
-                                  className="bg-white rounded-xl px-4 py-3 border border-gold-light/40 flex items-center justify-between gap-3"
+                                  className="bg-white/[0.05] rounded-xl px-4 py-3 border border-white/10 flex items-center justify-between gap-3"
                                 >
                                   <div className="min-w-0">
-                                    <p className="text-sm font-medium text-charcoal truncate">{o.bookTitle}</p>
-                                    <p className="text-xs text-muted">
+                                    <p className="text-sm font-medium text-white truncate">{o.bookTitle}</p>
+                                    <p className="text-xs text-white/45">
                                       {o.plan} · {new Date(o.createdAt).toLocaleDateString("en-GB")}
                                     </p>
                                   </div>
                                   <div className="flex items-center gap-2 flex-shrink-0">
                                     <span className="text-gold font-bold text-sm">${o.amount}</span>
-                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[o.status] || "bg-cream text-muted"}`}>
+                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[o.status] || "bg-white/5 text-white/50 border border-white/10"}`}>
                                       {o.status.replace("_", " ")}
                                     </span>
                                   </div>
@@ -442,15 +442,15 @@ export default function CustomerManager() {
 
                         {/* Invoices History */}
                         <div>
-                          <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-3 flex items-center gap-1">
+                          <p className="text-xs font-semibold text-white/45 uppercase tracking-wide mb-3 flex items-center gap-1">
                             <FileText size={11} /> Invoices ({customer.invoices.length})
                           </p>
                           {customer.invoices.length === 0 ? (
-                            <div className="bg-white rounded-xl p-4 border border-dashed border-gold-light text-center">
-                              <p className="text-muted text-sm mb-2">No invoices yet</p>
+                            <div className="bg-white/[0.03] rounded-xl p-4 border border-dashed border-white/15 text-center">
+                              <p className="text-white/45 text-sm mb-2">No invoices yet</p>
                               <button
                                 onClick={() => handleCreateInvoice(customer)}
-                                className="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1 mx-auto"
+                                className="text-xs text-sky-400 font-semibold hover:underline flex items-center gap-1 mx-auto"
                               >
                                 <Plus size={11} /> Create Invoice
                               </button>
@@ -463,11 +463,11 @@ export default function CustomerManager() {
                                   href={`/invoice/${inv.id}`}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="bg-white rounded-xl px-4 py-3 border border-gold-light/40 flex items-center justify-between gap-3 hover:border-gold transition-colors"
+                                  className="bg-white/[0.05] rounded-xl px-4 py-3 border border-white/10 flex items-center justify-between gap-3 hover:border-gold/35 transition-colors"
                                 >
                                   <div className="min-w-0">
-                                    <p className="text-sm font-mono font-bold text-charcoal">{inv.invoiceNumber}</p>
-                                    <p className="text-xs text-muted">
+                                    <p className="text-sm font-mono font-bold text-white">{inv.invoiceNumber}</p>
+                                    <p className="text-xs text-white/45">
                                       {new Date(inv.createdAt).toLocaleDateString("en-GB")}
                                     </p>
                                   </div>
@@ -475,7 +475,7 @@ export default function CustomerManager() {
                                     <span className="text-gold font-bold text-sm">
                                       {inv.currency} {Number(inv.total).toFixed(0)}
                                     </span>
-                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[inv.status] || "bg-cream text-muted"}`}>
+                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[inv.status] || "bg-white/5 text-white/50 border border-white/10"}`}>
                                       {inv.status}
                                     </span>
                                   </div>

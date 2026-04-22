@@ -1,3 +1,9 @@
+// ✅ NEW FEATURE START - FIX BUILD ERROR
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+// ✅ NEW FEATURE END
+
+
 // NEW FEATURE START (v6)
 import { NextRequest, NextResponse } from "next/server";
 import { getInvoiceById, markInvoiceSent } from "@/lib/db";
