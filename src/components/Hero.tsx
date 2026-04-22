@@ -124,7 +124,7 @@ export default function Hero() {
               </p>
               <p className="text-white/45 text-sm mb-8">Premium cover mockup · KDP-ready</p>
               <img
-  src="/my-cover.Png"
+  src="/my-cover.png"
   className="w-32 h-44 object-cover rounded-md border border-gold/40"
 />
             </div>
