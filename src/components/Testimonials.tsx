@@ -8,7 +8,7 @@ import Reveal from "@/components/Reveal";
 const items = [
   {
     quote:
-      "Abbass translated a messy manuscript into a clean, professional e-book. Communication was clear and delivery was on time.",
+      "Abbassa translated a messy manuscript into a clean, professional e-book. Communication was clear and delivery was on time.",
     name: "Indie Author",
     role: "Amazon KDP · Fiction",
   },

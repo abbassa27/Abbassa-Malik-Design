@@ -34,13 +34,13 @@ export default function Navbar() {
         <Link
           href="/#home"
           className="flex items-center gap-2 font-serif text-xl font-semibold tracking-tight text-white shrink-0"
-          aria-label="Abbass Malik home"
+          aria-label="Abbassa Malik home"
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-gold to-gold-deep text-void text-sm font-bold ring-1 ring-gold/40">
             AM
           </span>
           <span className="hidden sm:inline text-white/90">
-            Abbass<span className="text-gold">.</span>
+            Abbassa<span className="text-gold">.</span>
           </span>
         </Link>
 

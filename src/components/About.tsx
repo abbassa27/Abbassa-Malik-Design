@@ -23,7 +23,7 @@ export default function About() {
             </h2>
             <div className="space-y-4 text-white/60 leading-relaxed text-sm sm:text-base">
               <p>
-                I&apos;m <strong className="text-white">Abbass Malik</strong>, a graphic designer and visual storyteller
+                I&apos;m <strong className="text-white">Abbassa Malik</strong>, a graphic designer and visual storyteller
                 in Mostaganem, Algeria. I help authors turn ideas into polished, market-ready books — from covers that
                 stop the scroll to e-book interiors that feel effortless on every device.
               </p>
@@ -37,7 +37,7 @@ export default function About() {
               </p>
             </div>
 
-            <p className="mt-8 font-serif text-2xl text-gold">Abbass Malik</p>
+            <p className="mt-8 font-serif text-2xl text-gold">Abbassa Malik</p>
             <p className="text-white/45 text-sm mb-8">Book cover designer · E-book formatting specialist</p>
 
             <div className="flex flex-wrap gap-3">

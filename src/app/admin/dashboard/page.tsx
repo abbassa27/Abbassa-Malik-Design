@@ -330,7 +330,7 @@ export default function AdminDashboardPage() {
       <div className="glass-nav border-b border-white/10 px-4 py-3 flex items-center justify-between sticky top-0 z-40 gap-3 flex-wrap">
         <div className="flex items-center gap-2 flex-shrink-0">
           <span className="font-serif text-xl font-semibold text-white">
-            Abbass<span className="text-gold">.</span>
+            Abbassa<span className="text-gold">.</span>
           </span>
           <span className="text-[10px] font-semibold tracking-widest text-gold border border-gold/35 px-2 py-0.5 rounded-full uppercase">
             Admin

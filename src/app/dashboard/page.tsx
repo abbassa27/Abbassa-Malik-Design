@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, LayoutDashboard, Shield, Upload } from "lucide-react";
 
 export const metadata = {
-  title: "Dashboard · Abbass Malik",
+  title: "Dashboard · Abbassa Malik",
   description: "Client uploads and admin order management.",
 };
 
@@ -12,7 +12,7 @@ export default function DashboardHubPage() {
       <header className="border-b border-white/10 glass-nav">
         <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link href="/" className="font-serif text-lg font-semibold">
-            Abbass<span className="text-gold">.</span>
+            Abbassa<span className="text-gold">.</span>
           </Link>
           <span className="text-[10px] uppercase tracking-widest text-white/40">Portal</span>
         </div>

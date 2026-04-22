@@ -16,7 +16,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
           <div>
             <span className="font-serif text-2xl font-semibold text-white">
-              Abbass<span className="text-gold">.</span>
+              Abbassa<span className="text-gold">.</span>
             </span>
             <p className="text-white/45 text-sm mt-2 max-w-xs">
               Book cover designer &amp; e-book formatting specialist · Remote worldwide
@@ -87,7 +87,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-10 pt-8 text-center text-white/35 text-xs">
-          © {new Date().getFullYear()} Abbass Malik. All rights reserved.
+          © {new Date().getFullYear()} Abbassa Malik. All rights reserved.
         </div>
       </div>
     </footer>
