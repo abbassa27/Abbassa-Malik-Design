@@ -4,9 +4,10 @@ import { getOrderById } from "@/lib/db";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const order = await getOrderById(params.id);
+  const { id } = await params;
+  const order = await getOrderById(id);
   if (!order) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -27,7 +28,7 @@ export async function GET(
       storedAs: f.storedAs,
       size: f.size,
       mimeType: f.mimeType,
-      uploadedAt: f.uploadedAt,
+      uploadedAt: f.createdAt,
     })),
   };
 

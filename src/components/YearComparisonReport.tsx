@@ -68,7 +68,7 @@ function GrowthBadge({ current, previous, label }: {
   const up  = pct >= 0;
   return (
     <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold
-      ${up ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"}`}
+      ${up ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/25" : "bg-red-500/15 text-red-300 border border-red-500/25"}`}
     >
       {up ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
       {up ? "+" : ""}{pct.toFixed(1)}% {label}
@@ -120,21 +120,21 @@ export default function YearComparisonReport() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-charcoal">Year Comparison</h2>
-          <p className="text-muted text-sm mt-0.5">Compare revenue & orders year-over-year</p>
+          <h2 className="font-serif text-2xl font-bold text-white">Year Comparison</h2>
+          <p className="text-white/50 text-sm mt-0.5">Compare revenue & orders year-over-year</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={fetchBoth}
-            className="w-9 h-9 rounded-full border border-gold-light flex items-center justify-center hover:border-gold transition-colors"
+            className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center hover:border-gold/40 transition-colors"
           >
-            <RefreshCw size={14} className={`text-muted ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw size={14} className={`text-white/45 ${loading ? "animate-spin" : ""}`} />
           </button>
           {dataA && dataB && (
             <button
               onClick={() => exportYearCSV([dataA, dataB])}
-              className="flex items-center gap-2 border border-gold-light text-charcoal px-4 py-2 rounded-full
-                         text-sm font-semibold hover:border-gold transition-colors"
+              className="flex items-center gap-2 border border-white/15 text-white px-4 py-2 rounded-full
+                         text-sm font-semibold hover:border-gold/40 hover:text-gold transition-colors"
             >
               <Download size={14} /> Export CSV
             </button>
@@ -143,27 +143,27 @@ export default function YearComparisonReport() {
       </div>
 
       {/* Year Selectors + Metric Toggle */}
-      <div className="flex flex-wrap items-center gap-4 bg-white rounded-2xl border border-gold-light/50 p-5">
+      <div className="flex flex-wrap items-center gap-4 bg-white/[0.04] rounded-2xl border border-white/10 p-5">
         <div className="flex items-center gap-3">
           <Calendar size={16} className="text-gold" />
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-muted">Year A:</label>
+            <label className="text-sm font-medium text-white/50">Year A:</label>
             <select
               value={yearA}
               onChange={(e) => setYearA(Number(e.target.value))}
-              className="px-3 py-1.5 rounded-xl border border-gold-light/60 bg-cream text-sm text-charcoal
+              className="px-3 py-1.5 rounded-xl border border-white/15 bg-white/[0.06] text-sm text-white
                          focus:outline-none focus:ring-2 focus:ring-gold/30"
             >
               {yearOptions.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
-          <span className="text-muted font-medium">vs</span>
+          <span className="text-white/45 font-medium">vs</span>
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-muted">Year B:</label>
+            <label className="text-sm font-medium text-white/50">Year B:</label>
             <select
               value={yearB}
               onChange={(e) => setYearB(Number(e.target.value))}
-              className="px-3 py-1.5 rounded-xl border border-gold-light/60 bg-cream text-sm text-charcoal
+              className="px-3 py-1.5 rounded-xl border border-white/15 bg-white/[0.06] text-sm text-white
                          focus:outline-none focus:ring-2 focus:ring-gold/30"
             >
               {yearOptions.map((y) => <option key={y} value={y}>{y}</option>)}
@@ -171,18 +171,18 @@ export default function YearComparisonReport() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 bg-cream rounded-full px-1.5 py-1 ml-auto">
+        <div className="flex items-center gap-1 bg-white/[0.06] rounded-full px-1.5 py-1 ml-auto border border-white/10">
           <button
             onClick={() => setMetric("revenue")}
             className={`px-3 py-1 rounded-full text-xs font-semibold transition-all
-              ${metric === "revenue" ? "bg-white shadow text-charcoal" : "text-muted"}`}
+              ${metric === "revenue" ? "bg-gold text-void shadow-sm" : "text-white/50 hover:text-white/80"}`}
           >
             Revenue
           </button>
           <button
             onClick={() => setMetric("orders")}
             className={`px-3 py-1 rounded-full text-xs font-semibold transition-all
-              ${metric === "orders" ? "bg-white shadow text-charcoal" : "text-muted"}`}
+              ${metric === "orders" ? "bg-gold text-void shadow-sm" : "text-white/50 hover:text-white/80"}`}
           >
             Orders
           </button>
@@ -194,24 +194,24 @@ export default function YearComparisonReport() {
         <div className="grid sm:grid-cols-2 gap-4">
           {[
             { data: dataA, color: "text-gold",     bar: "bg-gold" },
-            { data: dataB, color: "text-charcoal", bar: "bg-charcoal/30" },
+            { data: dataB, color: "text-white/90", bar: "bg-white/30" },
           ].map(({ data, color, bar }) => (
             <motion.div
               key={data.year}
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl p-5 border border-gold-light/50"
+              className="bg-white/[0.04] rounded-2xl p-5 border border-white/10"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className={`w-3 h-3 rounded-full ${bar}`} />
-                  <p className="font-serif text-2xl font-bold text-charcoal">{data.year}</p>
+                  <p className="font-serif text-2xl font-bold text-white">{data.year}</p>
                 </div>
-                <BarChart2 size={16} className="text-muted" />
+                <BarChart2 size={16} className="text-white/40" />
               </div>
               <p className={`font-bold text-3xl ${color} mb-1`}>
                 {metric === "revenue" ? `$${data.total.toFixed(0)}` : data.orders}
               </p>
-              <p className="text-muted text-xs">
+              <p className="text-white/45 text-xs">
                 {metric === "revenue" ? "Total Revenue" : "Total Orders"}
               </p>
               {data.year === yearA && dataB && (
@@ -234,16 +234,16 @@ export default function YearComparisonReport() {
           <div className="w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
         </div>
       ) : dataA && dataB ? (
-        <div className="bg-white rounded-2xl border border-gold-light/50 p-6">
+        <div className="bg-white/[0.04] rounded-2xl border border-white/10 p-6">
           <div className="flex items-center gap-4 mb-6 flex-wrap">
-            <h3 className="font-semibold text-charcoal">Monthly Breakdown</h3>
+            <h3 className="font-semibold text-white">Monthly Breakdown</h3>
             <div className="flex items-center gap-3 ml-auto flex-wrap">
-              <div className="flex items-center gap-1.5 text-xs text-muted">
+              <div className="flex items-center gap-1.5 text-xs text-white/50">
                 <div className="w-3 h-3 rounded-full bg-gold" />
                 {yearA}
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-muted">
-                <div className="w-3 h-3 rounded-full bg-charcoal/30" />
+              <div className="flex items-center gap-1.5 text-xs text-white/50">
+                <div className="w-3 h-3 rounded-full bg-white/30" />
                 {yearB}
               </div>
             </div>
@@ -272,11 +272,11 @@ export default function YearComparisonReport() {
                       initial={{ height: 0 }}
                       animate={{ height: hB }}
                       transition={{ duration: 0.6, delay: i * 0.04 + 0.02 }}
-                      className="w-3 bg-charcoal/25 rounded-t-sm flex-shrink-0"
+                      className="w-3 bg-white/25 rounded-t-sm flex-shrink-0"
                       title={`${yearB}: ${metric === "revenue" ? `$${vB.toFixed(0)}` : vB}`}
                     />
                   </div>
-                  <p className="text-muted text-[9px] font-medium">{mon}</p>
+                  <p className="text-white/40 text-[9px] font-medium">{mon}</p>
                 </div>
               );
             })}
@@ -286,28 +286,28 @@ export default function YearComparisonReport() {
 
       {/* Detailed Monthly Table */}
       {dataA && dataB && (
-        <div className="bg-white rounded-2xl border border-gold-light/50 overflow-hidden">
-          <div className="px-5 py-3 bg-cream border-b border-gold-light/30">
-            <h3 className="font-semibold text-charcoal text-sm">Monthly Detail</h3>
+        <div className="bg-white/[0.04] rounded-2xl border border-white/10 overflow-hidden">
+          <div className="px-5 py-3 bg-white/[0.06] border-b border-white/10">
+            <h3 className="font-semibold text-white text-sm">Monthly Detail</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gold-light/20">
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted uppercase tracking-wide">Month</th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">
+                <tr className="border-b border-white/10">
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-white/45 uppercase tracking-wide">Month</th>
+                  <th className="text-right px-4 py-3 text-xs font-semibold text-white/45 uppercase tracking-wide">
                     Revenue {yearA}
                   </th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">
+                  <th className="text-right px-4 py-3 text-xs font-semibold text-white/45 uppercase tracking-wide">
                     Revenue {yearB}
                   </th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">
+                  <th className="text-right px-4 py-3 text-xs font-semibold text-white/45 uppercase tracking-wide">
                     Δ Revenue
                   </th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">
+                  <th className="text-right px-4 py-3 text-xs font-semibold text-white/45 uppercase tracking-wide">
                     Orders {yearA}
                   </th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold text-muted uppercase tracking-wide">
+                  <th className="text-right px-4 py-3 text-xs font-semibold text-white/45 uppercase tracking-wide">
                     Orders {yearB}
                   </th>
                 </tr>
@@ -324,42 +324,42 @@ export default function YearComparisonReport() {
                   return (
                     <tr
                       key={mon}
-                      className="border-b border-gold-light/10 hover:bg-cream/40 transition-colors"
+                      className="border-b border-white/[0.06] hover:bg-white/[0.04] transition-colors"
                     >
-                      <td className="px-5 py-3 font-medium text-charcoal">{mon}</td>
+                      <td className="px-5 py-3 font-medium text-white/90">{mon}</td>
                       <td className="px-4 py-3 text-right font-semibold text-gold">
-                        {rA > 0 ? `$${rA.toFixed(0)}` : <span className="text-muted/40">—</span>}
+                        {rA > 0 ? `$${rA.toFixed(0)}` : <span className="text-white/25">—</span>}
                       </td>
-                      <td className="px-4 py-3 text-right text-charcoal">
-                        {rB > 0 ? `$${rB.toFixed(0)}` : <span className="text-muted/40">—</span>}
+                      <td className="px-4 py-3 text-right text-white/85">
+                        {rB > 0 ? `$${rB.toFixed(0)}` : <span className="text-white/25">—</span>}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {rA > 0 || rB > 0 ? (
-                          <span className={`text-xs font-semibold ${diff >= 0 ? "text-green-600" : "text-red-500"}`}>
+                          <span className={`text-xs font-semibold ${diff >= 0 ? "text-emerald-400" : "text-red-400"}`}>
                             {diff >= 0 ? "+" : ""}${diff.toFixed(0)}
                             {diffPct && ` (${diff >= 0 ? "+" : ""}${diffPct}%)`}
                           </span>
                         ) : (
-                          <span className="text-muted/40">—</span>
+                          <span className="text-white/25">—</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right text-charcoal">{mA?.orders || <span className="text-muted/40">0</span>}</td>
-                      <td className="px-4 py-3 text-right text-charcoal">{mB?.orders || <span className="text-muted/40">0</span>}</td>
+                      <td className="px-4 py-3 text-right text-white/85">{mA?.orders || <span className="text-white/25">0</span>}</td>
+                      <td className="px-4 py-3 text-right text-white/85">{mB?.orders || <span className="text-white/25">0</span>}</td>
                     </tr>
                   );
                 })}
                 {/* Totals Row */}
-                <tr className="bg-cream border-t-2 border-gold font-bold">
-                  <td className="px-5 py-3 text-charcoal">Total</td>
+                <tr className="bg-white/[0.06] border-t-2 border-gold/50 font-bold">
+                  <td className="px-5 py-3 text-white">Total</td>
                   <td className="px-4 py-3 text-right text-gold">${dataA.total.toFixed(0)}</td>
-                  <td className="px-4 py-3 text-right text-charcoal">${dataB.total.toFixed(0)}</td>
+                  <td className="px-4 py-3 text-right text-white/90">${dataB.total.toFixed(0)}</td>
                   <td className="px-4 py-3 text-right">
-                    <span className={`text-sm font-bold ${dataA.total >= dataB.total ? "text-green-600" : "text-red-500"}`}>
+                    <span className={`text-sm font-bold ${dataA.total >= dataB.total ? "text-emerald-400" : "text-red-400"}`}>
                       {dataA.total >= dataB.total ? "+" : ""}${(dataA.total - dataB.total).toFixed(0)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right text-charcoal">{dataA.orders}</td>
-                  <td className="px-4 py-3 text-right text-charcoal">{dataB.orders}</td>
+                  <td className="px-4 py-3 text-right text-white/90">{dataA.orders}</td>
+                  <td className="px-4 py-3 text-right text-white/90">{dataB.orders}</td>
                 </tr>
               </tbody>
             </table>

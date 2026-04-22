@@ -34,10 +34,10 @@ const STATUS_CONFIG: Record<
   string,
   { label: string; color: string; icon: React.ElementType }
 > = {
-  pending:     { label: "Pending",     color: "bg-yellow-100 text-yellow-800", icon: Clock },
-  in_progress: { label: "In Progress", color: "bg-blue-100 text-blue-800",     icon: RefreshCw },
-  completed:   { label: "Completed",   color: "bg-purple-100 text-purple-800", icon: CheckCircle },
-  delivered:   { label: "Delivered",   color: "bg-green-100 text-green-800",   icon: Truck },
+  pending:     { label: "Pending",     color: "bg-amber-500/15 text-amber-200 border border-amber-500/30", icon: Clock },
+  in_progress: { label: "In Progress", color: "bg-sky-500/15 text-sky-200 border border-sky-500/30",     icon: RefreshCw },
+  completed:   { label: "Completed",   color: "bg-violet-500/15 text-violet-200 border border-violet-500/30", icon: CheckCircle },
+  delivered:   { label: "Delivered",   color: "bg-emerald-500/15 text-emerald-200 border border-emerald-500/30",   icon: Truck },
 };
 
 function formatBytes(b: number) {
@@ -87,19 +87,19 @@ function OrderRow({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gold-light/50 overflow-hidden">
+    <div className="bg-white/[0.04] rounded-2xl border border-white/10 overflow-hidden">
       {/* Summary Row */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full text-left px-6 py-5 flex items-center gap-4 hover:bg-cream/50 transition-colors"
+        className="w-full text-left px-6 py-5 flex items-center gap-4 hover:bg-white/[0.06] transition-colors"
       >
         <Package size={18} className="text-gold flex-shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-charcoal truncate">{order.bookTitle}</p>
-          <p className="text-muted text-sm">
+          <p className="font-semibold text-white truncate">{order.bookTitle}</p>
+          <p className="text-white/50 text-sm">
             {order.authorName} · {order.plan} · ${order.amount}
           </p>
-          <p className="text-muted text-xs mt-0.5">
+          <p className="text-white/40 text-xs mt-0.5">
             {new Date(order.createdAt).toLocaleDateString("en-GB", {
               day: "2-digit", month: "short", year: "numeric",
             })}
@@ -111,14 +111,14 @@ function OrderRow({
           <cfg.icon size={12} /> {cfg.label}
         </span>
         {expanded
-          ? <ChevronUp size={16} className="text-muted flex-shrink-0" />
-          : <ChevronDown size={16} className="text-muted flex-shrink-0" />
+          ? <ChevronUp size={16} className="text-white/40 flex-shrink-0" />
+          : <ChevronDown size={16} className="text-white/40 flex-shrink-0" />
         }
       </button>
 
       {/* Expanded Detail */}
       {expanded && (
-        <div className="px-6 pb-6 border-t border-gold-light/30 pt-5 space-y-5">
+        <div className="px-6 pb-6 border-t border-white/10 pt-5 space-y-5">
           {/* Client Info */}
           <div className="grid sm:grid-cols-2 gap-3">
             {[
@@ -127,46 +127,46 @@ function OrderRow({
               ["Plan",        order.plan],
               ["Amount Paid", `$${order.amount}`],
             ].map(([l, v]) => (
-              <div key={l} className="bg-cream rounded-xl px-4 py-3">
-                <p className="text-xs text-muted uppercase tracking-wide mb-0.5">{l}</p>
-                <p className="text-sm font-medium text-charcoal">{v}</p>
+              <div key={l} className="bg-void rounded-xl border border-white/10 px-4 py-3">
+                <p className="text-xs text-white/45 uppercase tracking-wide mb-0.5">{l}</p>
+                <p className="text-sm font-medium text-white/90">{v}</p>
               </div>
             ))}
             {order.synopsis && (
-              <div className="sm:col-span-2 bg-cream rounded-xl px-4 py-3">
-                <p className="text-xs text-muted uppercase tracking-wide mb-0.5">Synopsis</p>
-                <p className="text-sm text-charcoal">{order.synopsis}</p>
+              <div className="sm:col-span-2 bg-void rounded-xl border border-white/10 px-4 py-3">
+                <p className="text-xs text-white/45 uppercase tracking-wide mb-0.5">Synopsis</p>
+                <p className="text-sm text-white/80">{order.synopsis}</p>
               </div>
             )}
             {order.instructions && (
-              <div className="sm:col-span-2 bg-cream rounded-xl px-4 py-3">
-                <p className="text-xs text-muted uppercase tracking-wide mb-0.5">Instructions</p>
-                <p className="text-sm text-charcoal">{order.instructions}</p>
+              <div className="sm:col-span-2 bg-void rounded-xl border border-white/10 px-4 py-3">
+                <p className="text-xs text-white/45 uppercase tracking-wide mb-0.5">Instructions</p>
+                <p className="text-sm text-white/80">{order.instructions}</p>
               </div>
             )}
           </div>
 
           {/* Client Files */}
           <div>
-            <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-2">
+            <p className="text-xs font-semibold text-white/45 uppercase tracking-wide mb-2">
               Client Uploads ({order.files.length})
             </p>
             {order.files.length === 0 ? (
-              <p className="text-muted text-sm">No files uploaded yet.</p>
+              <p className="text-white/45 text-sm">No files uploaded yet.</p>
             ) : (
               <div className="space-y-2">
                 {order.files.map((f: OrderFile) => (
                   <a
                     key={f.id}
                     href={`/api/orders/${order.id}/download/${encodeURIComponent(f.storedAs)}?by=client`}
-                    className="flex items-center justify-between bg-cream rounded-xl px-4 py-2.5 hover:border-gold border border-transparent transition-colors"
+                    className="flex items-center justify-between bg-void rounded-xl px-4 py-2.5 border border-white/10 hover:border-gold/40 transition-colors"
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <FileText size={14} className="text-gold flex-shrink-0" />
-                      <span className="text-sm text-charcoal truncate">{f.filename}</span>
+                      <span className="text-sm text-white/90 truncate">{f.filename}</span>
                     </div>
-                    <span className="text-xs text-muted ml-3 flex-shrink-0">({formatBytes(f.size)})</span>
-                    <Download size={14} className="text-muted ml-2 flex-shrink-0" />
+                    <span className="text-xs text-white/45 ml-3 flex-shrink-0">({formatBytes(f.size)})</span>
+                    <Download size={14} className="text-white/40 ml-2 flex-shrink-0" />
                   </a>
                 ))}
               </div>
@@ -175,7 +175,7 @@ function OrderRow({
 
           {/* Deliverables */}
           <div>
-            <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-2">
+            <p className="text-xs font-semibold text-white/45 uppercase tracking-wide mb-2">
               Deliverables ({order.deliverables.length})
             </p>
             {order.deliverables.length > 0 && (
@@ -184,19 +184,19 @@ function OrderRow({
                   <a
                     key={f.id}
                     href={`/api/orders/${order.id}/download/${encodeURIComponent(f.storedAs)}?by=admin`}
-                    className="flex items-center justify-between bg-cream rounded-xl px-4 py-2.5 hover:border-gold border border-transparent transition-colors"
+                    className="flex items-center justify-between bg-void rounded-xl px-4 py-2.5 border border-white/10 hover:border-gold/40 transition-colors"
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <FileText size={14} className="text-gold flex-shrink-0" />
-                      <span className="text-sm text-charcoal truncate">{f.filename}</span>
+                      <span className="text-sm text-white/90 truncate">{f.filename}</span>
                     </div>
-                    <span className="text-xs text-muted ml-3 flex-shrink-0">({formatBytes(f.size)})</span>
-                    <Download size={14} className="text-muted ml-2 flex-shrink-0" />
+                    <span className="text-xs text-white/45 ml-3 flex-shrink-0">({formatBytes(f.size)})</span>
+                    <Download size={14} className="text-white/40 ml-2 flex-shrink-0" />
                   </a>
                 ))}
               </div>
             )}
-            <label className="flex items-center gap-2 cursor-pointer bg-gold/10 border-2 border-dashed border-gold/40 rounded-xl px-4 py-3 hover:bg-gold/20 transition-colors w-fit">
+            <label className="flex items-center gap-2 cursor-pointer bg-gold/10 border-2 border-dashed border-gold/35 rounded-xl px-4 py-3 hover:bg-gold/15 transition-colors w-fit">
               <Upload size={16} className="text-gold" />
               <span className="text-sm font-medium text-gold">
                 {uploading ? "Uploading..." : "Upload Deliverable File"}
@@ -214,13 +214,13 @@ function OrderRow({
           {/* Status + Notes */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
+              <label className="block text-xs font-semibold text-white/45 uppercase tracking-wide mb-1.5">
                 Order Status
               </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as Order["status"])}
-                className="w-full px-4 py-2.5 rounded-xl border border-gold-light/60 bg-cream text-sm focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-void text-sm text-white focus:outline-none focus:ring-2 focus:ring-gold/40"
               >
                 {Object.entries(STATUS_CONFIG).map(([k, v]) => (
                   <option key={k} value={k}>{v.label}</option>
@@ -228,7 +228,7 @@ function OrderRow({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-muted uppercase tracking-wide mb-1.5">
+              <label className="block text-xs font-semibold text-white/45 uppercase tracking-wide mb-1.5">
                 Admin Notes
               </label>
               <textarea
@@ -236,7 +236,7 @@ function OrderRow({
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Internal notes..."
                 rows={3}
-                className="w-full px-4 py-2.5 rounded-xl border border-gold-light/60 bg-cream text-sm focus:outline-none focus:ring-2 focus:ring-gold/30 resize-none"
+                className="w-full px-4 py-2.5 rounded-xl border border-white/15 bg-void text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-gold/40 resize-none"
               />
             </div>
           </div>
@@ -245,7 +245,7 @@ function OrderRow({
             <button
               onClick={handleStatusSave}
               disabled={saving}
-              className="flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full bg-gold text-white hover:bg-gold/90 transition-all disabled:opacity-60"
+              className="flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full bg-gold text-void hover:bg-gold-light transition-all disabled:opacity-60"
             >
               <Edit3 size={14} />
               {saving ? <>Saving...</> : <>Save Changes</>}
@@ -257,7 +257,7 @@ function OrderRow({
                   openMessagesOrderId === order.id ? null : order.id
                 )
               }
-              className="flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full border-2 border-blue-200 text-blue-600 hover:bg-blue-50 transition-all"
+              className="flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full border border-gold/40 text-gold hover:bg-gold/10 transition-all"
             >
               <MessageCircle size={14} />
               {openMessagesOrderId === order.id ? "Hide Chat" : "Open Chat"}
@@ -268,7 +268,7 @@ function OrderRow({
           {/* NEW FEATURE START (v4 — embedded chat) */}
           {openMessagesOrderId === order.id && (
             <div className="mt-2">
-              <MessageThread orderId={order.id} role="admin" />
+              <MessageThread orderId={order.id} viewerRole="admin" />
             </div>
           )}
           {/* NEW FEATURE END (v4) */}
@@ -325,28 +325,32 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-void text-ivory">
       {/* ── Top Bar ── */}
-      <div className="bg-white border-b border-gold-light/50 px-4 py-3 flex items-center justify-between sticky top-0 z-40 gap-3 flex-wrap">
+      <div className="glass-nav border-b border-white/10 px-4 py-3 flex items-center justify-between sticky top-0 z-40 gap-3 flex-wrap">
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="font-serif text-xl font-bold text-charcoal">Abbassa.</span>
-          <span className="text-xs font-semibold text-gold bg-gold/10 px-2 py-0.5 rounded-full">Admin</span>
+          <span className="font-serif text-xl font-semibold text-white">
+            Abbass<span className="text-gold">.</span>
+          </span>
+          <span className="text-[10px] font-semibold tracking-widest text-gold border border-gold/35 px-2 py-0.5 rounded-full uppercase">
+            Admin
+          </span>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-1 bg-cream rounded-full px-1.5 py-1.5 flex-wrap">
+        <div className="flex items-center gap-1 bg-white/[0.05] rounded-full px-1.5 py-1.5 flex-wrap border border-white/10">
           {/* NEW FEATURE START (v4) */}
           <button
             onClick={() => setActiveTab("orders")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
-              ${activeTab === "orders" ? "bg-white shadow-sm text-charcoal" : "text-muted hover:text-charcoal"}`}
+              ${activeTab === "orders" ? "bg-gold text-void shadow-md" : "text-white/55 hover:text-white"}`}
           >
             <Package size={12} /> Orders
           </button>
           <button
             onClick={() => setActiveTab("analytics")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
-              ${activeTab === "analytics" ? "bg-white shadow-sm text-charcoal" : "text-muted hover:text-charcoal"}`}
+              ${activeTab === "analytics" ? "bg-gold text-void shadow-md" : "text-white/55 hover:text-white"}`}
           >
             <BarChart2 size={12} /> Analytics
           </button>
@@ -356,7 +360,7 @@ export default function AdminDashboardPage() {
           <button
             onClick={() => setActiveTab("business")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
-              ${activeTab === "business" ? "bg-white shadow-sm text-charcoal" : "text-muted hover:text-charcoal"}`}
+              ${activeTab === "business" ? "bg-gold text-void shadow-md" : "text-white/55 hover:text-white"}`}
           >
             <TrendingUp size={12} /> Business
           </button>
@@ -366,14 +370,14 @@ export default function AdminDashboardPage() {
           <button
             onClick={() => setActiveTab("invoices")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
-              ${activeTab === "invoices" ? "bg-white shadow-sm text-charcoal" : "text-muted hover:text-charcoal"}`}
+              ${activeTab === "invoices" ? "bg-gold text-void shadow-md" : "text-white/55 hover:text-white"}`}
           >
             <FileText size={12} /> Invoices
           </button>
           <button
             onClick={() => setActiveTab("subscriptions")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
-              ${activeTab === "subscriptions" ? "bg-white shadow-sm text-charcoal" : "text-muted hover:text-charcoal"}`}
+              ${activeTab === "subscriptions" ? "bg-gold text-void shadow-md" : "text-white/55 hover:text-white"}`}
           >
             <RefreshCw size={12} /> Subscriptions
           </button>
@@ -383,14 +387,14 @@ export default function AdminDashboardPage() {
           <button
             onClick={() => setActiveTab("customers")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
-              ${activeTab === "customers" ? "bg-white shadow-sm text-charcoal" : "text-muted hover:text-charcoal"}`}
+              ${activeTab === "customers" ? "bg-gold text-void shadow-md" : "text-white/55 hover:text-white"}`}
           >
             <Users size={12} /> Customers
           </button>
           <button
             onClick={() => setActiveTab("reports")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all
-              ${activeTab === "reports" ? "bg-white shadow-sm text-charcoal" : "text-muted hover:text-charcoal"}`}
+              ${activeTab === "reports" ? "bg-gold text-void shadow-md" : "text-white/55 hover:text-white"}`}
           >
             <BarChart2 size={12} /> Reports
           </button>
@@ -399,7 +403,7 @@ export default function AdminDashboardPage() {
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 text-sm font-medium text-muted hover:text-red-500 transition-colors flex-shrink-0"
+          className="flex items-center gap-2 text-sm font-medium text-white/50 hover:text-red-400 transition-colors flex-shrink-0"
         >
           <LogOut size={16} /> Logout
         </button>
@@ -432,22 +436,22 @@ export default function AdminDashboardPage() {
             {/* Stats Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
               {[
-                { key: "all",         label: "Total Orders", color: "text-charcoal" },
-                { key: "pending",     label: "Pending",      color: "text-yellow-600" },
-                { key: "in_progress", label: "In Progress",  color: "text-blue-600" },
-                { key: "delivered",   label: "Delivered",    color: "text-green-600" },
+                { key: "all",         label: "Total Orders", color: "text-gold" },
+                { key: "pending",     label: "Pending",      color: "text-amber-300" },
+                { key: "in_progress", label: "In Progress",  color: "text-sky-300" },
+                { key: "delivered",   label: "Delivered",    color: "text-emerald-300" },
               ].map((s) => (
                 <motion.div
                   key={s.key}
                   onClick={() => setFilter(s.key as typeof filter)}
                   whileHover={{ y: -2 }}
-                  className={`bg-white rounded-2xl p-5 text-center border transition-all cursor-pointer
-                    ${filter === s.key ? "border-gold shadow-md" : "border-gold-light/50"}`}
+                  className={`bg-white/[0.04] rounded-2xl p-5 text-center border transition-all cursor-pointer
+                    ${filter === s.key ? "border-gold/60 ring-1 ring-gold/25 shadow-lg shadow-black/40" : "border-white/10 hover:border-white/20"}`}
                 >
                   <p className={`font-serif text-3xl font-bold ${s.color}`}>
                     {counts[s.key as keyof typeof counts]}
                   </p>
-                  <p className="text-muted text-xs mt-1 font-medium">{s.label}</p>
+                  <p className="text-white/45 text-xs mt-1 font-medium">{s.label}</p>
                 </motion.div>
               ))}
             </div>
@@ -460,8 +464,8 @@ export default function AdminDashboardPage() {
                   onClick={() => setFilter(s)}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
                     filter === s
-                      ? "bg-gold text-white"
-                      : "bg-white border border-gold-light text-muted hover:border-gold"
+                      ? "bg-gold text-void"
+                      : "bg-white/[0.05] border border-white/15 text-white/60 hover:border-gold/40 hover:text-white"
                   }`}
                 >
                   {s === "all" ? "All" : STATUS_CONFIG[s].label}
@@ -476,13 +480,13 @@ export default function AdminDashboardPage() {
             {loading ? (
               <div className="space-y-3">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-24 bg-white rounded-2xl border border-gold-light/50 animate-pulse" />
+                  <div key={i} className="h-24 bg-white/[0.05] rounded-2xl border border-white/10 animate-pulse" />
                 ))}
               </div>
             ) : filtered.length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-2xl border border-gold-light/50">
-                <Package size={40} className="text-gold/30 mx-auto mb-3" />
-                <p className="text-muted font-medium">No orders found</p>
+              <div className="text-center py-20 bg-white/[0.04] rounded-2xl border border-white/10">
+                <Package size={40} className="text-gold/40 mx-auto mb-3" />
+                <p className="text-white/50 font-medium">No orders found</p>
               </div>
             ) : (
               <div className="space-y-3">

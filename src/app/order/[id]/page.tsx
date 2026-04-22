@@ -6,19 +6,25 @@ import { motion } from "framer-motion";
 import { Download, FileText, Clock, RefreshCw, CheckCircle, Truck, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import type { Order, OrderFile } from "@prisma/client";
+
+/** Shape returned by GET /api/orders/client/[id] */
+type ClientOrder = Pick<
+  Order,
+  "id" | "plan" | "amount" | "authorName" | "bookTitle" | "genre" | "status" | "createdAt" | "updatedAt"
+> & { deliverables: Pick<OrderFile, "id" | "filename" | "storedAs" | "size" | "mimeType">[] };
 // NEW FEATURE START (v4 — Messages in client order page)
 import dynamic from "next/dynamic";
 const MessageThread = dynamic(() => import("@/components/MessageThread"), { ssr: false });
 // NEW FEATURE END (v4)
 
-const STATUS_STEPS: Order["status"][] = ["pending", "in_progress", "completed", "delivered"];
-const STATUS_LABELS: Record<Order["status"], string> = {
+const STATUS_STEPS: ClientOrder["status"][] = ["pending", "in_progress", "completed", "delivered"];
+const STATUS_LABELS: Record<ClientOrder["status"], string> = {
   pending: "Received",
   in_progress: "In Progress",
   completed: "Completed",
   delivered: "Delivered",
 };
-const STATUS_ICONS: Record<Order["status"], typeof Clock> = {
+const STATUS_ICONS: Record<ClientOrder["status"], typeof Clock> = {
   pending: Clock,
   in_progress: RefreshCw,
   completed: CheckCircle,
@@ -32,8 +38,9 @@ function formatBytes(b: number) {
 }
 
 export default function ClientOrderPage() {
-  const { id } = useParams<{ id: string }>();
-  const [order, setOrder] = useState<Order | null>(null);
+  const params = useParams();
+  const id = typeof params?.id === "string" ? params.id : "";
+  const [order, setOrder] = useState<ClientOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -128,7 +135,7 @@ export default function ClientOrderPage() {
               </div>
             ) : (
               <div className="space-y-2">
-                {order.deliverables.map((f: OrderFile) => (
+                {order.deliverables.map((f) => (
                   <div key={f.id} className="flex items-center justify-between bg-green-50 rounded-xl px-4 py-3">
                     <div className="flex items-center gap-2 min-w-0">
                       <FileText size={14} className="text-green-600 flex-shrink-0" />

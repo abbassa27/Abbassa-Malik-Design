@@ -44,7 +44,7 @@ export default function PayPalButton({
           await actions.order.capture();
           // Redirect to file upload page with plan info
           router.push(
-            `/upload?plan=${encodeURIComponent(planName)}&amount=${amount}`
+            `/file-upload?plan=${encodeURIComponent(planName)}&amount=${amount}`
           );
           onSuccess?.();
         }

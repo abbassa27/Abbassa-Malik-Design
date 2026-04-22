@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 
 // GET — admin only: list all orders
 export async function GET() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get("admin_token")?.value;
   if (!token || !verifyAdminToken(token)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

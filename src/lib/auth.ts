@@ -7,19 +7,28 @@ const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-change-in-prod";
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "abbassamalik";
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || "";
 
+function useDevPassword(): boolean {
+  return !ADMIN_PASSWORD_HASH || ADMIN_PASSWORD_HASH.includes("placeholder");
+}
+
+/** When no bcrypt hash: allow ADMIN_USERNAME plus common legacy aliases so local login matches the on-screen hint. */
+function devUsernameOk(username: string): boolean {
+  const u = username.trim();
+  if (u === ADMIN_USERNAME.trim()) return true;
+  if (u === "abbassa" || u === "abbassamalik") return true;
+  return false;
+}
+
 export async function verifyAdminCredentials(
   username: string,
   password: string
 ): Promise<boolean> {
-  // Check username first
-  if (username !== ADMIN_USERNAME) return false;
-
-  // If no hash configured, use default dev password
-  if (!ADMIN_PASSWORD_HASH || ADMIN_PASSWORD_HASH.includes("placeholder")) {
-    return password === "admin123";
+  if (useDevPassword()) {
+    return password === "admin123" && devUsernameOk(username);
   }
 
-  // Compare with bcrypt hash
+  if (username.trim() !== ADMIN_USERNAME.trim()) return false;
+
   try {
     return await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
   } catch {

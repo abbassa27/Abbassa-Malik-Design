@@ -6,7 +6,7 @@ import { verifyAdminToken } from "@/lib/auth";
 import { cookies } from "next/headers";
 
 export async function GET() {
-  const token = cookies().get("admin_token")?.value;
+  const token = (await cookies()).get("admin_token")?.value;
   if (!token || !verifyAdminToken(token))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const [subscriptions, stats] = await Promise.all([getAllSubscriptions(), getSubscriptionStats()]);

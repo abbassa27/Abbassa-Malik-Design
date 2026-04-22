@@ -65,15 +65,15 @@ export default function MessageThread({ orderId, viewerRole }: MessageThreadProp
     <div className="flex flex-col h-full min-h-[360px] max-h-[520px]">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-charcoal text-sm flex items-center gap-2">
+        <h3 className="font-semibold text-white text-sm flex items-center gap-2">
           <MessageCircle size={14} className="text-gold" /> Messages
         </h3>
         <button
           onClick={fetchMessages}
-          className="w-7 h-7 rounded-lg bg-cream flex items-center justify-center hover:bg-gold/10 transition-colors"
+          className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center hover:bg-gold/15 transition-colors"
           title="Refresh"
         >
-          <RefreshCw size={12} className="text-muted" />
+          <RefreshCw size={12} className="text-white/50" />
         </button>
       </div>
 
@@ -84,7 +84,7 @@ export default function MessageThread({ orderId, viewerRole }: MessageThreadProp
             <div className="w-5 h-5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="text-center py-8 text-muted text-sm">
+          <div className="text-center py-8 text-white/45 text-sm">
             No messages yet. Start the conversation!
           </div>
         ) : (
@@ -99,8 +99,8 @@ export default function MessageThread({ orderId, viewerRole }: MessageThreadProp
                 <div
                   className={`max-w-[78%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                     isMe(msg)
-                      ? "bg-gold text-white rounded-br-sm"
-                      : "bg-white border border-gold-light/50 text-charcoal rounded-bl-sm"
+                      ? "bg-gold text-void rounded-br-sm"
+                      : "bg-white/[0.08] border border-white/15 text-white/90 rounded-bl-sm"
                   }`}
                 >
                   {!isMe(msg) && (
@@ -109,7 +109,7 @@ export default function MessageThread({ orderId, viewerRole }: MessageThreadProp
                     </p>
                   )}
                   <p>{msg.body}</p>
-                  <p className={`text-xs mt-1 ${isMe(msg) ? "text-white/60 text-right" : "text-muted"}`}>
+                  <p className={`text-xs mt-1 ${isMe(msg) ? "text-void/60 text-right" : "text-white/45"}`}>
                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     {isMe(msg) && msg.readAt && " ✓✓"}
                   </p>
@@ -127,16 +127,16 @@ export default function MessageThread({ orderId, viewerRole }: MessageThreadProp
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 px-4 py-2.5 rounded-full border border-gold-light/60 bg-cream focus:outline-none focus:ring-2 focus:ring-gold/30 text-sm text-charcoal placeholder:text-muted/60"
+          className="flex-1 px-4 py-2.5 rounded-full border border-white/15 bg-void focus:outline-none focus:ring-2 focus:ring-gold/40 text-sm text-white placeholder:text-white/35"
           disabled={sending}
         />
         <button
           type="submit"
           disabled={sending || !body.trim()}
-          className="w-10 h-10 rounded-full bg-gold text-white flex items-center justify-center hover:bg-gold/90 transition-all disabled:opacity-50 flex-shrink-0"
+          className="w-10 h-10 rounded-full bg-gold text-void flex items-center justify-center hover:bg-gold-light transition-all disabled:opacity-50 flex-shrink-0"
         >
           {sending
-            ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ? <span className="w-4 h-4 border-2 border-void/30 border-t-void rounded-full animate-spin" />
             : <Send size={14} />
           }
         </button>

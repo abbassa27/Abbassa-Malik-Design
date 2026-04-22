@@ -1,14 +1,23 @@
 // NEW FEATURE START (v4 — DB Helpers over Prisma)
 import { prisma } from "./prisma";
 import type {
-  Order, OrderFile, EventLog, Message,
+  Order, OrderFile, EventLog, Message, Lead,
   OrderStatus,
   // NEW FEATURE START (v6)
   InvoiceStatus, SubscriptionStatus,
   // NEW FEATURE END (v6)
 } from "@prisma/client";
 
-export type { Order, OrderFile, EventLog, Message };
+export type { Order, OrderFile, EventLog, Message, Lead };
+
+export async function createLead(data: {
+  name: string;
+  email: string;
+  phone?: string;
+  message: string;
+}) {
+  return prisma.lead.create({ data });
+}
 
 // ════════════════════════════════════════════════════════════════════
 // ORDERS
@@ -155,7 +164,7 @@ export async function getAnalytics() {
   const [
     totalOrders,
     statusCounts,
-    revenueRows,
+    revenueAgg,
     recentLogs,
     ordersByDay,
     topPlans,
@@ -163,7 +172,9 @@ export async function getAnalytics() {
   ] = await Promise.all([
     prisma.order.count(),
     prisma.order.groupBy({ by: ["status"], _count: { id: true } }),
-    prisma.order.aggregate({ _sum: { amount: true } }),
+    prisma.$queryRaw<{ total: unknown }[]>`
+      SELECT COALESCE(SUM(CAST("amount" AS NUMERIC)), 0) AS total FROM "Order"
+    `,
     prisma.eventLog.findMany({
       orderBy: { createdAt: "desc" },
       take:    20,
@@ -185,9 +196,7 @@ export async function getAnalytics() {
     prisma.message.count(),
   ]);
 
-  const totalRevenue = revenueRows._sum.amount
-    ? parseFloat(revenueRows._sum.amount as unknown as string)
-    : 0;
+  const totalRevenue = Number(revenueAgg[0]?.total) || 0;
 
   return {
     totalOrders,
@@ -263,18 +272,25 @@ export async function getYearlyRevenue() {
 }
 
 export async function getServiceBreakdown() {
-  const rows = await prisma.order.groupBy({
-    by:      ["plan"],
-    _count:  { id: true },
-    _sum:    { amount: true },
-    orderBy: { _count: { id: "desc" } },
+  const rows = await prisma.$queryRaw<
+    { plan: string; count: bigint; revenue: unknown }[]
+  >`
+    SELECT "plan" as plan, COUNT(*)::bigint as count,
+           COALESCE(SUM(CAST("amount" AS NUMERIC)), 0) as revenue
+    FROM "Order"
+    GROUP BY "plan"
+    ORDER BY COUNT(*) DESC
+  `;
+  return rows.map((r) => {
+    const count = Number(r.count);
+    const revenue = Number(r.revenue) || 0;
+    return {
+      plan:    r.plan,
+      count,
+      revenue,
+      avg:     count > 0 ? revenue / count : 0,
+    };
   });
-  return rows.map((r) => ({
-    plan:    r.plan,
-    count:   r._count.id,
-    revenue: Number(r._sum.amount) || 0,
-    avg:     r._count.id > 0 ? (Number(r._sum.amount) || 0) / r._count.id : 0,
-  }));
 }
 
 export async function getProfitabilityStats() {
@@ -284,36 +300,29 @@ export async function getProfitabilityStats() {
   const lm  = m === 1 ? 12 : m - 1;
   const ly  = m === 1 ? y - 1 : y;
 
+  const monthStart = new Date(`${y}-${String(m).padStart(2, "0")}-01`);
+  const lastMonthStart = new Date(`${ly}-${String(lm).padStart(2, "0")}-01`);
+
   const [thisMonth, lastMonth, allTime] = await Promise.all([
-    prisma.order.aggregate({
-      where: {
-        createdAt: {
-          gte: new Date(`${y}-${String(m).padStart(2, "0")}-01`),
-        },
-      },
-      _sum:   { amount: true },
-      _count: { id: true },
-    }),
-    prisma.order.aggregate({
-      where: {
-        createdAt: {
-          gte: new Date(`${ly}-${String(lm).padStart(2, "0")}-01`),
-          lt:  new Date(`${y}-${String(m).padStart(2, "0")}-01`),
-        },
-      },
-      _sum:   { amount: true },
-      _count: { id: true },
-    }),
-    prisma.order.aggregate({
-      _sum:   { amount: true },
-      _count: { id: true },
-    }),
+    prisma.$queryRaw<{ revenue: unknown; orders: bigint }[]>`
+      SELECT COALESCE(SUM(CAST("amount" AS NUMERIC)), 0) as revenue, COUNT(*)::bigint as orders
+      FROM "Order" WHERE "createdAt" >= ${monthStart}
+    `,
+    prisma.$queryRaw<{ revenue: unknown; orders: bigint }[]>`
+      SELECT COALESCE(SUM(CAST("amount" AS NUMERIC)), 0) as revenue, COUNT(*)::bigint as orders
+      FROM "Order"
+      WHERE "createdAt" >= ${lastMonthStart} AND "createdAt" < ${monthStart}
+    `,
+    prisma.$queryRaw<{ revenue: unknown; orders: bigint }[]>`
+      SELECT COALESCE(SUM(CAST("amount" AS NUMERIC)), 0) as revenue, COUNT(*)::bigint as orders
+      FROM "Order"
+    `,
   ]);
 
-  const thisMonthRev = Number(thisMonth._sum.amount) || 0;
-  const lastMonthRev = Number(lastMonth._sum.amount) || 0;
-  const allTimeRev   = Number(allTime._sum.amount)   || 0;
-  const allTimeCount = allTime._count.id;
+  const thisMonthRev = Number(thisMonth[0]?.revenue) || 0;
+  const lastMonthRev = Number(lastMonth[0]?.revenue) || 0;
+  const allTimeRev   = Number(allTime[0]?.revenue) || 0;
+  const allTimeCount = Number(allTime[0]?.orders) || 0;
   const avgPerOrder  = allTimeCount > 0 ? allTimeRev / allTimeCount : 0;
   const momGrowth    = lastMonthRev > 0
     ? ((thisMonthRev - lastMonthRev) / lastMonthRev) * 100
@@ -321,9 +330,9 @@ export async function getProfitabilityStats() {
 
   return {
     thisMonthRevenue: thisMonthRev,
-    thisMonthOrders:  thisMonth._count.id,
+    thisMonthOrders:  Number(thisMonth[0]?.orders) || 0,
     lastMonthRevenue: lastMonthRev,
-    lastMonthOrders:  lastMonth._count.id,
+    lastMonthOrders:  Number(lastMonth[0]?.orders) || 0,
     allTimeRevenue:   allTimeRev,
     allTimeOrders:    allTimeCount,
     avgPerOrder,

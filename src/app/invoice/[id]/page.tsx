@@ -44,12 +44,14 @@ const STATUS_CONFIG: Record<
 };
 
 export default function InvoicePublicPage() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams();
+  const id = typeof params?.id === "string" ? params.id : "";
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState("");
 
   useEffect(() => {
+    if (!id) return;
     fetch(`/api/invoices/${id}`)
       .then((r) => r.json())
       .then((d) => {

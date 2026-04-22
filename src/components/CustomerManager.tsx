@@ -40,15 +40,15 @@ interface Customer {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  pending:     "bg-yellow-100 text-yellow-700",
-  in_progress: "bg-blue-100   text-blue-700",
-  completed:   "bg-purple-100 text-purple-700",
-  delivered:   "bg-green-100  text-green-700",
-  paid:        "bg-green-100  text-green-700",
-  sent:        "bg-blue-100   text-blue-700",
-  draft:       "bg-cream      text-muted",
-  overdue:     "bg-red-100    text-red-700",
-  cancelled:   "bg-cream      text-muted",
+  pending:     "bg-amber-500/15 text-amber-200 border border-amber-500/25",
+  in_progress: "bg-sky-500/15   text-sky-200 border border-sky-500/25",
+  completed:   "bg-violet-500/15 text-violet-200 border border-violet-500/25",
+  delivered:   "bg-emerald-500/15  text-emerald-200 border border-emerald-500/25",
+  paid:        "bg-emerald-500/15  text-emerald-200 border border-emerald-500/25",
+  sent:        "bg-sky-500/15   text-sky-200 border border-sky-500/25",
+  draft:       "bg-white/5      text-white/50 border border-white/10",
+  overdue:     "bg-red-500/15    text-red-300 border border-red-500/25",
+  cancelled:   "bg-white/5      text-white/50 border border-white/10",
 };
 
 function exportCustomersCSV(customers: Customer[]) {
@@ -143,7 +143,7 @@ export default function CustomerManager() {
         ? <ChevronUp size={12} className="text-gold" />
         : <ChevronDown size={12} className="text-gold" />
     ) : (
-      <ChevronDown size={12} className="text-muted/40" />
+      <ChevronDown size={12} className="text-white/25" />
     );
 
   const handleCreateInvoice = async (customer: Customer) => {
@@ -204,22 +204,22 @@ export default function CustomerManager() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-charcoal">Customers</h2>
-          <p className="text-muted text-sm mt-0.5">
+          <h2 className="font-serif text-2xl font-bold text-white">Customers</h2>
+          <p className="text-white/50 text-sm mt-0.5">
             {totalCustomers} client{totalCustomers !== 1 ? "s" : ""} · Advanced management
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={fetchCustomers}
-            className="w-9 h-9 rounded-full border border-gold-light flex items-center justify-center hover:border-gold transition-colors"
+            className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center hover:border-gold/40 transition-colors"
           >
-            <RefreshCw size={14} className="text-muted" />
+            <RefreshCw size={14} className="text-white/45" />
           </button>
           <button
             onClick={() => exportCustomersCSV(filtered)}
-            className="flex items-center gap-2 border border-gold-light text-charcoal px-4 py-2 rounded-full
-                       text-sm font-semibold hover:border-gold transition-colors"
+            className="flex items-center gap-2 border border-white/15 text-white px-4 py-2 rounded-full
+                       text-sm font-semibold hover:border-gold/40 hover:text-gold transition-colors"
           >
             <Download size={14} /> Export CSV
           </button>

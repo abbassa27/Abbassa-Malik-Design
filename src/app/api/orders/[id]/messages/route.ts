@@ -6,25 +6,27 @@ import { cookies } from "next/headers";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const cookieStore = cookies();
+  const { id } = await params;
+  const cookieStore = await cookies();
   const adminToken = cookieStore.get("admin_token")?.value;
   const isAdmin = !!adminToken && !!verifyAdminToken(adminToken);
 
-  const messages = await getMessages(params.id);
+  const messages = await getMessages(id);
 
   // Mark messages as read for the reader
-  await markMessagesRead(params.id, isAdmin ? "admin" : "client");
+  await markMessagesRead(id, isAdmin ? "admin" : "client");
 
   return NextResponse.json({ messages });
 }
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const cookieStore = cookies();
+  const { id } = await params;
+  const cookieStore = await cookies();
   const adminToken = cookieStore.get("admin_token")?.value;
   const isAdmin = !!adminToken && !!verifyAdminToken(adminToken);
 
@@ -35,8 +37,8 @@ export async function POST(
     }
 
     const sender = isAdmin ? "admin" : "client";
-    const message = await sendMessage(params.id, sender, body.trim());
-    await logEvent(params.id, "message_sent", sender, { preview: body.slice(0, 60) });
+    const message = await sendMessage(id, sender, body.trim());
+    await logEvent(id, "message_sent", sender, { preview: body.slice(0, 60) });
 
     return NextResponse.json({ success: true, message }, { status: 201 });
   } catch {

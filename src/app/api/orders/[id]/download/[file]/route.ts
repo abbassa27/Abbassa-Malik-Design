@@ -8,13 +8,14 @@ import fs from "fs";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string; file: string } }
+  { params }: { params: Promise<{ id: string; file: string }> }
 ) {
-  const cookieStore = cookies();
+  const { id: orderId, file: fileParam } = await params;
+  const cookieStore = await cookies();
   const adminToken = cookieStore.get("admin_token")?.value;
   const isAdmin = !!adminToken && !!verifyAdminToken(adminToken);
 
-  const order = getOrderById(params.id);
+  const order = getOrderById(orderId);
   if (!order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
@@ -24,14 +25,14 @@ export async function GET(
     ? [...order.files, ...order.deliverables]
     : order.deliverables;
 
-  const fileRecord = allFiles.find((f) => f.storedAs === params.file);
+  const fileRecord = allFiles.find((f) => f.storedAs === fileParam);
   if (!fileRecord) {
     return NextResponse.json({ error: "File not found or access denied" }, { status: 404 });
   }
 
   // Prevent path traversal
-  const uploadDir = getOrderUploadDir(params.id);
-  const filePath = path.resolve(path.join(uploadDir, params.file));
+  const uploadDir = getOrderUploadDir(orderId);
+  const filePath = path.resolve(path.join(uploadDir, fileParam));
   if (!filePath.startsWith(path.resolve(uploadDir))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

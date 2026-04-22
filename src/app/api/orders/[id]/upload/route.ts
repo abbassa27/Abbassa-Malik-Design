@@ -30,13 +30,14 @@ function getOrderUploadDir(orderId: string): string {
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const cookieStore = cookies();
+  const { id: orderId } = await params;
+  const cookieStore = await cookies();
   const adminToken = cookieStore.get("admin_token")?.value;
   const isAdmin = !!adminToken && !!verifyAdminToken(adminToken);
 
-  const order = await getOrderById(params.id);
+  const order = await getOrderById(orderId);
   if (!order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
@@ -48,7 +49,7 @@ export async function POST(
       return NextResponse.json({ error: "No files provided" }, { status: 400 });
     }
 
-    const uploadDir = getOrderUploadDir(params.id);
+    const uploadDir = getOrderUploadDir(orderId);
     const savedFiles = [];
 
     for (const file of files) {
@@ -67,11 +68,11 @@ export async function POST(
       const fileData = { filename: file.name, storedAs: safeName, size: file.size, mimeType: file.type };
 
       if (isAdmin) {
-        await addAdminFile(params.id, fileData);
-        await logEvent(params.id, "admin_uploaded", "admin", { filename: file.name, size: file.size });
+        await addAdminFile(orderId, fileData);
+        await logEvent(orderId, "admin_uploaded", "admin", { filename: file.name, size: file.size });
       } else {
-        await addClientFile(params.id, fileData);
-        await logEvent(params.id, "client_uploaded", "client", { filename: file.name, size: file.size });
+        await addClientFile(orderId, fileData);
+        await logEvent(orderId, "client_uploaded", "client", { filename: file.name, size: file.size });
       }
 
       savedFiles.push({ filename: file.name, storedAs: safeName });

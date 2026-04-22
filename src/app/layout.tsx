@@ -5,12 +5,13 @@ import PayPalProvider from "@/components/PayPalProvider";
 // NEW FEATURE END
 
 export const metadata: Metadata = {
-  title: "Abbassa Malik — Book Cover Designer & E-book Formatter",
-  description: "Professional book cover design and e-book formatting services. Transforming ideas into stunning visual narratives.",
-  keywords: ["book cover design", "ebook formatting", "graphic designer", "Abbassa Malik"],
+  title: "Abbass Malik — Book Cover Designer & E-book Formatting Specialist",
+  description:
+    "Premium book cover design and Kindle/EPUB formatting for Amazon KDP and beyond. Remote worldwide — Upwork & direct.",
+  keywords: ["book cover design", "ebook formatting", "KDP", "Behance", "Abbass Malik", "Abbassa Malik"],
   openGraph: {
-    title: "Abbassa Malik — Book Cover Designer",
-    description: "Transforming Ideas into Stunning Visual Narratives",
+    title: "Abbass Malik — Book Cover Designer",
+    description: "Dark & gold premium studio for authors and publishers.",
     type: "website",
   },
 };
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased bg-void text-ivory">
         {/* NEW FEATURE START */}
         <PayPalProvider>
           {children}

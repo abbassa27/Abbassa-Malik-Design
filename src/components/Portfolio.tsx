@@ -1,14 +1,16 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ExternalLink } from "lucide-react";
+import Reveal from "@/components/Reveal";
 
 interface Project {
   id: number;
   name: string;
   url: string;
-  covers: { "404"?: string; original?: string };
+  covers?: Record<string, string | undefined>;
   fields?: string[];
 }
 
@@ -21,123 +23,101 @@ const PLACEHOLDER_COVERS = [
   "https://images.unsplash.com/photo-1533669955142-6a73332af4db?w=600&q=80",
 ];
 
+function coverFromProject(p: Project, idx: number): string {
+  const c = p.covers;
+  const url =
+    (c?.["404"] as string | undefined) ||
+    (c?.["230"] as string | undefined) ||
+    (c?.original as string | undefined) ||
+    (c?.["115"] as string | undefined);
+  return url || PLACEHOLDER_COVERS[idx % PLACEHOLDER_COVERS.length];
+}
+
 export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // NEW FEATURE START
-    const behanceRssUrl = process.env.NEXT_PUBLIC_BEHANCE_RSS_URL || "/api/behance";
-
-    fetch(behanceRssUrl)
-      .then((r) => r.text())
-      .then((xmlText) => {
-        if (!xmlText || xmlText.trim().startsWith("{")) {
-          throw new Error("RSS feed not available");
-        }
-
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(xmlText, "text/xml");
-        const items = Array.from(xml.querySelectorAll("item")).slice(0, 12);
-
-        const parsedProjects: Project[] = items.map((item, index) => {
-          const title = item.querySelector("title")?.textContent?.trim() || `Project ${index + 1}`;
-          const link = item.querySelector("link")?.textContent?.trim() || "https://www.behance.net/abbassamalik";
-          const categoryNodes = Array.from(item.querySelectorAll("category"));
-          const categories = categoryNodes
-            .map((node) => node.textContent?.trim())
-            .filter((value): value is string => Boolean(value));
-
-          const description = item.querySelector("description")?.textContent || "";
-          const imageMatch = description.match(/<img[^>]+src=[\"']([^\"']+)[\"']/i);
-          const imageUrl = imageMatch?.[1] || PLACEHOLDER_COVERS[index % PLACEHOLDER_COVERS.length];
-
-          return {
-            id: index + 1,
-            name: title,
-            url: link,
-            covers: { "404": imageUrl, original: imageUrl },
-            fields: categories.length > 0 ? categories : ["Behance Project"],
-          };
-        });
-
-        setProjects(parsedProjects);
-        setLoading(false);
+    fetch("/api/behance/projects")
+      .then((r) => r.json())
+      .then((data: { projects?: Project[] }) => {
+        const list = Array.isArray(data.projects) ? data.projects : [];
+        setProjects(list);
       })
-      .catch(() => setLoading(false));
-    // NEW FEATURE END
+      .catch(() => setProjects([]))
+      .finally(() => setLoading(false));
   }, []);
 
-  const getCover = (p: Project, idx: number) =>
-    p.covers?.["404"] || p.covers?.original || PLACEHOLDER_COVERS[idx % PLACEHOLDER_COVERS.length];
+  const display = projects.length > 0 ? projects.slice(0, 12) : [];
 
   return (
-    <section id="portfolio" className="py-24 bg-charcoal text-ivory relative overflow-hidden">
-      <div className="container mx-auto px-6 lg:px-8 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="max-w-3xl mx-auto text-center mb-16"
-        >
-          <span className="text-gold text-sm tracking-[0.25em] uppercase font-light mb-4 block">My Work</span>
-          <h2 className="text-4xl md:text-5xl font-light mb-6">Portfolio</h2>
-          <p className="text-ivory/70 text-lg leading-relaxed">
-            A selection of book covers and e-book projects crafted for authors and publishers worldwide.
+    <section id="portfolio" className="py-24 lg:py-32 bg-ink relative overflow-hidden">
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <Reveal className="max-w-3xl mx-auto text-center mb-14 lg:mb-16">
+          <span className="text-gold text-xs font-semibold tracking-[0.28em] uppercase mb-4 block">
+            Behance · Live gallery
+          </span>
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-5">
+            Recent book cover designs
+          </h2>
+          <p className="text-white/55 text-base sm:text-lg leading-relaxed">
+            Projects sync from your Behance profile when RSS or API data is available — always linking out to the full case study.
           </p>
-        </motion.div>
+        </Reveal>
 
         {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="animate-pulse rounded-3xl bg-ivory/5 border border-gold/10 overflow-hidden">
-                <div className="aspect-[4/3] bg-ivory/10" />
-                <div className="p-6">
-                  <div className="h-6 bg-ivory/10 rounded mb-4" />
-                  <div className="h-4 bg-ivory/10 rounded w-1/2" />
+              <div
+                key={i}
+                className="animate-pulse rounded-2xl bg-white/[0.04] border border-white/10 overflow-hidden"
+              >
+                <div className="aspect-[4/3] bg-white/5" />
+                <div className="p-6 space-y-3">
+                  <div className="h-5 bg-white/10 rounded w-3/4" />
+                  <div className="h-4 bg-white/5 rounded w-1/2" />
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {(projects.length > 0 ? projects : [...Array(6)]).map((p, i) => {
-              const proj = typeof p === "object" && p !== null && "name" in p ? (p as Project) : null;
-              const coverUrl = proj ? getCover(proj, i) : PLACEHOLDER_COVERS[i];
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {(display.length > 0 ? display : [null, null, null, null, null, null]).map((p, i) => {
+              const proj = p as Project | null;
+              const coverUrl = proj ? coverFromProject(proj, i) : PLACEHOLDER_COVERS[i];
               const projectUrl = proj?.url || "https://www.behance.net/abbassamalik";
-              const projectName = proj?.name || "Book Design Project";
+              const projectName = proj?.name || "Book design project";
 
               return (
                 <motion.a
-                  key={proj?.id || i}
+                  key={proj?.id ?? `ph-${i}`}
                   href={projectUrl}
                   target="_blank"
                   rel="noreferrer"
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 28 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.06 }}
-                  whileHover={{ y: -6 }}
-                  className="group rounded-3xl overflow-hidden border border-gold/10 bg-ivory/5 backdrop-blur-sm hover:border-gold/30 transition-all duration-300"
+                  transition={{ duration: 0.5, delay: i * 0.05 }}
+                  whileHover={{ y: -5 }}
+                  className="group rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] hover:border-gold/35 transition-all duration-300"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <Image
                       src={coverUrl}
                       alt={projectName}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                      className="object-cover group-hover:scale-[1.04] transition-transform duration-700"
+                      sizes="(max-width: 768px) 100vw, 33vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-5">
-                      <span className="text-sm text-ivory/80">View on Behance</span>
-                      <ExternalLink className="w-5 h-5 text-gold" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-void via-void/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-4">
+                      <span className="text-xs text-white/80">View on Behance</span>
+                      <ExternalLink className="w-4 h-4 text-gold" />
                     </div>
                   </div>
-
-                  <div className="p-6">
-                    <h3 className="text-xl font-medium text-ivory mb-2 line-clamp-2">{projectName}</h3>
+                  <div className="p-5">
+                    <h3 className="text-base font-medium text-white mb-1 line-clamp-2">{projectName}</h3>
                     {proj?.fields?.[0] && (
-                      <p className="text-sm text-gold/80 uppercase tracking-[0.15em]">{proj.fields[0]}</p>
+                      <p className="text-[11px] text-gold/80 uppercase tracking-[0.15em]">{proj.fields[0]}</p>
                     )}
                   </div>
                 </motion.a>
@@ -146,23 +126,17 @@ export default function Portfolio() {
           </div>
         )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-center mt-14"
-        >
+        <Reveal className="text-center mt-12 lg:mt-14">
           <a
             href="https://www.behance.net/abbassamalik"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-gold/30 text-gold hover:bg-gold hover:text-charcoal transition-all duration-300"
+            className="inline-flex items-center gap-2 rounded-full border border-gold/40 px-8 py-3.5 text-sm font-semibold text-gold hover:bg-gold/10 transition-colors"
           >
-            View Full Portfolio on Behance
+            View all work on Behance
             <ExternalLink className="w-4 h-4" />
           </a>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   );
