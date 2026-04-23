@@ -99,6 +99,9 @@ export async function GET() {
       const res = await fetchWithRetry(
         `https://api.behance.net/v2/users/abbassamalik/projects?client_id=${clientId}`
       );
+	  
+// ✅ أضف هذا السطر هنا
+if (!res || !res.ok) throw new Error("Behance API failed");
 
       const json = (await res.json()) as { projects?: BehanceProject[] };
 
