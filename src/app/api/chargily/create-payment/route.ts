@@ -82,9 +82,9 @@ export async function POST(req: Request) {
     const webhookEndpoint = `${baseUrl}/api/chargily/webhook`;
 
     const checkout = await createCheckout({
-      amount: input.amount,
-      currency: "dzd",
-      payment_method: "edahabia",
+  amount: input.amount * 100,
+  currency: "DZD",
+  payment_method: "edahabia",
       customer_id: customer.id,
       success_url: successUrl,
       failure_url: failureUrl,
