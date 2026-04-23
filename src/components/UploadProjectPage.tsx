@@ -1,10 +1,15 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useRef, Suspense } from "react";
+import { useState, useRef, Suspense, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Upload, FileText, CheckCircle, ArrowLeft, BookOpen, Send } from "lucide-react";
 import Link from "next/link";
+// # NEW FEATURE START - Chargily payment success modal integration
+import PaymentSuccessModal, {
+  type PaymentTransaction,
+} from "@/components/PaymentSuccessModal";
+// # NEW FEATURE END
 
 function UploadForm() {
   const params = useSearchParams();
@@ -24,6 +29,59 @@ function UploadForm() {
     instructions: "",
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // # NEW FEATURE START - Chargily payment success state
+  const paymentStatus = params?.get("payment");
+  const paymentProvider = params?.get("provider");
+  const paymentSessionId = params?.get("session_id") || params?.get("checkout_id");
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentTx, setPaymentTx] = useState<PaymentTransaction | null>(null);
+
+  useEffect(() => {
+    if (paymentStatus !== "success") return;
+    if (typeof window === "undefined") return;
+
+    let saved: Partial<PaymentTransaction> & {
+      amount?: number | string;
+      checkout_id?: string;
+      name?: string;
+      email?: string;
+      phone?: string;
+      description?: string;
+    } = {};
+    try {
+      const raw = sessionStorage.getItem("chargily_pending_payment");
+      if (raw) saved = JSON.parse(raw);
+    } catch {
+      /* ignore */
+    }
+
+    const tx: PaymentTransaction = {
+      transactionId:
+        paymentSessionId ||
+        (saved.checkout_id as string | undefined) ||
+        `TXN-${Date.now()}`,
+      name: saved.name || "Customer",
+      email: saved.email || "",
+      phone: saved.phone || "",
+      amount: saved.amount ?? amount ?? "",
+      currency: "DZD",
+      provider: paymentProvider || "chargily-edahabia",
+      description: saved.description || "Edahabia payment",
+      paidAt: new Date().toLocaleString(),
+    };
+
+    setPaymentTx(tx);
+    setShowPaymentModal(true);
+
+    // Pre-fill upload form with the payment customer details so the flow is seamless
+    setFormData((prev) => ({
+      ...prev,
+      authorName: prev.authorName || tx.name,
+      email: prev.email || tx.email,
+    }));
+  }, [paymentStatus, paymentProvider, paymentSessionId, amount]);
+  // # NEW FEATURE END
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -140,6 +198,16 @@ function UploadForm() {
 
   return (
     <div className="min-h-screen bg-void">
+      {/* # NEW FEATURE START - Chargily success modal */}
+      {paymentTx && (
+        <PaymentSuccessModal
+          open={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          onContinue={() => setShowPaymentModal(false)}
+          transaction={paymentTx}
+        />
+      )}
+      {/* # NEW FEATURE END */}
       <div className="bg-void/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-white/55 hover:text-gold transition-colors text-sm font-medium">

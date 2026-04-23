@@ -18,7 +18,8 @@ const CACHE_TTL = 1000 * 60 * 10; // 10 min
 // # NEW FEATURE END
 
 // # NEW FEATURE START - Fetch with timeout + retry
-async function fetchWithRetry(url: string, retries = 2) {
+async function fetchWithRetry(url: string, retries = 2): Promise<Response> {
+  let lastErr: unknown;
   for (let i = 0; i <= retries; i++) {
     try {
       const controller = new AbortController();
@@ -35,9 +36,11 @@ async function fetchWithRetry(url: string, retries = 2) {
 
       return res;
     } catch (err) {
+      lastErr = err;
       if (i === retries) throw err;
     }
   }
+  throw lastErr instanceof Error ? lastErr : new Error("fetchWithRetry exhausted");
 }
 // # NEW FEATURE END
 
@@ -99,19 +102,22 @@ export async function GET() {
       const res = await fetchWithRetry(
         `https://api.behance.net/v2/users/abbassamalik/projects?client_id=${clientId}`
       );
-	  
-// ✅ أضف هذا السطر هنا
-if (!res || !res.ok) throw new Error("Behance API failed");
+
+      if (!res.ok) throw new Error("Behance API failed");
 
       const json = (await res.json()) as { projects?: BehanceProject[] };
 
       if (json?.projects?.length) {
+        // # NEW FEATURE START - Limit to last 9 projects on the landing page
+        const limited = json.projects.slice(-9);
+        // # NEW FEATURE END
+
         // # NEW FEATURE START - Save cache
-        CACHE = json.projects;
+        CACHE = limited;
         LAST_FETCH = now;
         // # NEW FEATURE END
 
-        return NextResponse.json({ source: "api", projects: json.projects });
+        return NextResponse.json({ source: "api", projects: limited });
       }
     } catch {
       /* fallback */
@@ -125,19 +131,21 @@ if (!res || !res.ok) throw new Error("Behance API failed");
 
   try {
     const res = await fetchWithRetry(rssUrl);
-	
-	// ✅ أضف هذا الشرط هنا
-if (!res || !res.ok) throw new Error("RSS fetch failed");
+
+    if (!res.ok) throw new Error("RSS fetch failed");
 
     const xml = await res.text();
     const projects = parseRssProjects(xml);
+    // # NEW FEATURE START - Limit to last 9 projects on the landing page
+    const limited = projects.slice(-9);
+    // # NEW FEATURE END
 
     // # NEW FEATURE START - Save cache
-    CACHE = projects;
+    CACHE = limited;
     LAST_FETCH = now;
     // # NEW FEATURE END
 
-    return NextResponse.json({ source: "rss", projects });
+    return NextResponse.json({ source: "rss", projects: limited });
   } catch {
     return NextResponse.json({
       source: "fallback",

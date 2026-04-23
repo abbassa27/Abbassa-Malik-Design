@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, MapPin, ExternalLink, MessageCircle, Send, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { Mail, MapPin, ExternalLink, MessageCircle, Send, Loader2, CreditCard } from "lucide-react";
 import Reveal from "@/components/Reveal";
 
 const platforms = [
@@ -135,6 +136,25 @@ export default function Contact() {
                 </a>
               ))}
             </div>
+
+            {/* # NEW FEATURE START - Pay via EDAHABIA (Chargily) */}
+            <div className="mt-6">
+              <Link
+                href="/checkout/edahabia"
+                aria-label="Pay via EDAHABIA"
+                className="group relative inline-flex w-full sm:w-auto items-center justify-center gap-2.5 rounded-xl px-6 py-4 font-semibold text-void text-sm tracking-wide shadow-[0_10px_30px_-10px_rgba(201,169,99,0.55)] ring-1 ring-gold/40 bg-gradient-to-r from-gold-deep via-gold to-gold-light hover:opacity-95 transition-opacity"
+              >
+                <CreditCard className="w-4 h-4" />
+                <span>Pay via EDAHABIA</span>
+                <span className="hidden sm:inline-flex items-center text-[10px] uppercase tracking-[0.22em] bg-void/85 text-gold rounded-full px-2 py-0.5 ml-1">
+                  DZD
+                </span>
+              </Link>
+              <p className="text-white/40 text-xs mt-2">
+                Algerian customers · secure Chargily Pay checkout
+              </p>
+            </div>
+            {/* # NEW FEATURE END */}
           </Reveal>
 
           <div className="space-y-8">
