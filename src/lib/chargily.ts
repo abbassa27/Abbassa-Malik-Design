@@ -57,7 +57,7 @@ export type ChargilyCustomer = {
   phone?: string;
 };
 
-const DEFAULT_BASE_URL = "https://pay.chargily.net/api/v2";
+const DEFAULT_BASE_URL = "https://api.chargily.com/v2";
 
 function getBaseUrl(): string {
   return process.env.CHARGILY_API_URL || DEFAULT_BASE_URL;
