@@ -103,6 +103,8 @@ export async function GET() {
         `https://api.behance.net/v2/users/abbassamalik/projects?client_id=${clientId}`
       );
 
+      if (!res.ok) throw new Error("Behance API failed");
+
       const json = (await res.json()) as { projects?: BehanceProject[] };
 
       if (json?.projects?.length) {
@@ -129,6 +131,8 @@ export async function GET() {
 
   try {
     const res = await fetchWithRetry(rssUrl);
+
+    if (!res.ok) throw new Error("RSS fetch failed");
 
     const xml = await res.text();
     const projects = parseRssProjects(xml);

@@ -51,7 +51,7 @@ export default function Portfolio() {
   // # NEW FEATURE START - Limit landing-page grid to last 9 projects
   const display = projects.length > 0 ? projects.slice(-9) : [];
   // # NEW FEATURE END
-  
+
 
 // # NEW FEATURE START
 if (!loading && projects.length === 0) {

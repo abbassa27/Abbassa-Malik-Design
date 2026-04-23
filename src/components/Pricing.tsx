@@ -129,7 +129,7 @@ function PlanCard({ plan, index }: { plan: (typeof plans)[0]; index: number }) {
           <div className="mt-auto space-y-3">
             <div className="rounded-xl border border-white/10 bg-white/[0.05] p-3 text-xs text-white/80 text-center">
               Paying <strong className="text-gold">${plan.amount}</strong> for{" "}
-              <strong>{plan.name}</strong> via PayPal — then you&apos;ll be sent to file upload.
+              <strong className="mr-1">{plan.name}</strong> via PayPal — then you&apos;ll be sent to file upload.
             </div>
             <PayPalButton amount={plan.amount} planName={plan.name} />
             <button
