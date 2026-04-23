@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-change-in-prod";
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "abbassamalik";
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "malikpc";
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || "";
 
 function useDevPassword(): boolean {
@@ -15,7 +15,7 @@ function useDevPassword(): boolean {
 function devUsernameOk(username: string): boolean {
   const u = username.trim();
   if (u === ADMIN_USERNAME.trim()) return true;
-  if (u === "abbassa" || u === "abbassamalik") return true;
+  if (u === "abbassa" || u === "malikpc") return true;
   return false;
 }
 

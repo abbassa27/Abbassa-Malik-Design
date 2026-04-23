@@ -144,11 +144,11 @@ export default function Contact() {
                 className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 scroll-mt-28"
               >
                 <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-                  <Send className="w-4 h-4 text-gold" /> Project inquiry
+                  <Send className="w-4 h-4 text-gold" /> Booking details
                 </h3>
                 <p className="text-white/45 text-sm mb-6">
-                  Leads are stored securely when your database is configured, and duplicated to email when{" "}
-                  <code className="text-gold/80 text-xs">RESEND_API_KEY</code> is set.
+                  Ready to transform your book into a professional digital product?{" "}
+                  <code className="text-gold/80 text-xs">Apply Now</code>.
                 </p>
                 <form onSubmit={onSubmit} className="space-y-4">
                   <div>

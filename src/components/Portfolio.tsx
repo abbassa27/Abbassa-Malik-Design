@@ -49,6 +49,13 @@ export default function Portfolio() {
   }, []);
 
   const display = projects.length > 0 ? projects.slice(0, 12) : [];
+  
+
+// # NEW FEATURE START
+if (!loading && projects.length === 0) {
+  return <p className="text-center text-white/50">No projects available</p>;
+}
+// # NEW FEATURE END
 
   return (
     <section id="portfolio" className="py-24 lg:py-32 bg-ink relative overflow-hidden">

@@ -123,9 +123,9 @@ export default function AdminLoginPage() {
 
           <p className="text-center text-xs text-white/45 mt-6 leading-relaxed">
             Local dev (no <code className="text-gold/90">ADMIN_PASSWORD_HASH</code>): username{" "}
-            <code className="bg-white/10 px-1 py-0.5 rounded text-gold">abbassamalik</code> or{" "}
-            <code className="bg-white/10 px-1 py-0.5 rounded text-gold">abbassa</code>, password{" "}
-            <code className="bg-white/10 px-1 py-0.5 rounded text-gold">admin123</code>
+            <code className="bg-white/10 px-1 py-0.5 rounded text-gold">******</code> or{" "}
+            <code className="bg-white/10 px-1 py-0.5 rounded text-gold">******</code>, password{" "}
+            <code className="bg-white/10 px-1 py-0.5 rounded text-gold">******</code>
             <br />
             <span className="text-red-400 font-medium">Production: set ADMIN_PASSWORD_HASH and restart.</span>
           </p>
