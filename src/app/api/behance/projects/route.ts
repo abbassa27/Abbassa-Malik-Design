@@ -125,6 +125,9 @@ if (!res || !res.ok) throw new Error("Behance API failed");
 
   try {
     const res = await fetchWithRetry(rssUrl);
+	
+	// ✅ أضف هذا الشرط هنا
+if (!res || !res.ok) throw new Error("RSS fetch failed");
 
     const xml = await res.text();
     const projects = parseRssProjects(xml);
