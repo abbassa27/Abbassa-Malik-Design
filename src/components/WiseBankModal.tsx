@@ -122,7 +122,14 @@ export default function WiseBankModal({
                 className="text-[#0A66C2] font-semibold underline"
               >
                 LinkedIn
-              </a>{" "}
+			  </a>{" "}
+or{" "}
+<a
+  href="mailto:abbassamalik@gmail.com"
+  className="text-red-500 font-semibold underline"
+>
+  abbassamalik@gmail.com
+</a>{" "}
               to activate your order.
             </div>
 
