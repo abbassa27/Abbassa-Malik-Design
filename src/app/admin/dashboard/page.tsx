@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   LogOut, Package, Clock, CheckCircle, Truck, Upload,
   Download, FileText, ChevronDown, ChevronUp, Edit3, X, RefreshCw,
@@ -11,6 +12,9 @@ import {
   // NEW FEATURE START (v7)
   Users,
   // NEW FEATURE END (v7)
+  // # NEW FEATURE START - Back to Home link
+  Home as HomeIcon,
+  // # NEW FEATURE END
 } from "lucide-react";
 import type { Order, OrderFile } from "@prisma/client";
 // NEW FEATURE START (v4 — Analytics + Messages tabs)
@@ -401,12 +405,22 @@ export default function AdminDashboardPage() {
           {/* NEW FEATURE END (v7) */}
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 text-sm font-medium text-white/50 hover:text-red-400 transition-colors flex-shrink-0"
-        >
-          <LogOut size={16} /> Logout
-        </button>
+        <div className="flex items-center gap-4 flex-shrink-0">
+          {/* # NEW FEATURE START - Back to Home link in admin top header */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm font-medium text-white/60 hover:text-gold transition-colors"
+          >
+            <HomeIcon size={16} /> Back to Home
+          </Link>
+          {/* # NEW FEATURE END */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-sm font-medium text-white/50 hover:text-red-400 transition-colors"
+          >
+            <LogOut size={16} /> Logout
+          </button>
+        </div>
       </div>
 
       {/* ── Main Content ── */}
