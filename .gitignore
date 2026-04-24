@@ -10,3 +10,4 @@ coverage/
 .next/
 .vercel
 .env*.local
+tsconfig.tsbuildinfo
