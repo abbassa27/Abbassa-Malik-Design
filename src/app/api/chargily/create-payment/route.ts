@@ -82,7 +82,7 @@ export async function POST(req: Request) {
 
   success_url: successUrl,
   failure_url: failureUrl,
-  webhook_endpoint: webhookEndpoint,
+  webhook_url: webhookEndpoint,
 
   description: "Book design package",
 
