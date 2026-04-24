@@ -89,9 +89,13 @@ function CheckoutForm() {
       });
 
       const data = await res.json();
-      if (!res.ok || !data?.checkout_url) {
-        throw new Error(data?.error || "Unable to start Edahabia payment.");
-      }
+
+if (!res.ok || !data?.checkout_url) {
+  console.error("API ERROR:", data);
+  throw new Error(data.error || "Checkout creation failed");
+}
+
+
 
       // Store the returned ids so we can surface them after the redirect back
       if (typeof window !== "undefined") {

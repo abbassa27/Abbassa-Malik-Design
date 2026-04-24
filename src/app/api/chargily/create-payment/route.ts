@@ -76,22 +76,22 @@ export async function POST(req: Request) {
     const webhookEndpoint = `${baseUrl}/api/chargily/webhook`;
 
     const checkout = await createCheckout({
-  amount: 100000, // = 100000 centimes
+  amount: 100000,
   currency: "DZD",
   payment_method: "edahabia",
-      
-      success_url: successUrl,
-      failure_url: failureUrl,
-      webhook_endpoint: webhookEndpoint,
-      description: input.description,
-      locale: "en",
-      metadata: {
-        customer_name: input.name,
-        customer_email: input.email,
-        customer_phone: input.phone,
-        source: "abbassa-malik-site",
-      },
-    });
+
+  success_url: successUrl,
+  failure_url: failureUrl,
+  webhook_endpoint: webhookEndpoint,
+
+  description: "Book design package",
+
+  metadata: {
+    name: body.name,
+    email: body.email,
+    phone: body.phone,
+  },
+});
 
     return NextResponse.json({
   checkout_url: checkout.checkout_url,

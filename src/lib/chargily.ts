@@ -75,37 +75,23 @@ function getSecretKey(): string {
 }
 
 async function chargilyFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${getBaseUrl()}${path}`, {
-    ...init,
+  const res = await fetch(`https://api.chargily.com/v2${path}`, {
+    method: init.method || "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${getSecretKey()}`,
-      ...(init.headers || {}),
     },
-    // Never cache payment API calls
-    cache: "no-store",
+    body: init.body,
   });
 
-  const text = await res.text();
-  let data: unknown = null;
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    // leave data as raw text
-    data = text;
-  }
+  const json = await res.json();
 
   if (!res.ok) {
-    const message =
-      (data && typeof data === "object" && "message" in data && typeof (data as { message: unknown }).message === "string"
-        ? (data as { message: string }).message
-        : null) ||
-      (typeof data === "string" ? data : null) ||
-      `Chargily API error (${res.status})`;
-    throw new Error(message);
+    console.error("❌ Chargily error:", json);
+    throw new Error(json.message || "Chargily API error");
   }
 
-  return data as T;
+  return json;
 }
 
 export async function createCustomer(input: ChargilyCustomerInput): Promise<ChargilyCustomer> {
