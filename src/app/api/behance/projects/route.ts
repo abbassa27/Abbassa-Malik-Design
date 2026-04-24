@@ -108,8 +108,13 @@ export async function GET() {
       const json = (await res.json()) as { projects?: BehanceProject[] };
 
       if (json?.projects?.length) {
-        // # NEW FEATURE START - Limit to last 9 projects on the landing page
-        const limited = json.projects.slice(-9);
+        // # NEW FEATURE START - Return the newest 9 projects on the landing page.
+        // Behance API returns projects sorted by `published_on` DESC (newest first),
+        // but we sort defensively in case the order ever changes.
+        const sorted = [...json.projects].sort(
+          (a, b) => (b.published_on ?? 0) - (a.published_on ?? 0)
+        );
+        const limited = sorted.slice(0, 9);
         // # NEW FEATURE END
 
         // # NEW FEATURE START - Save cache
@@ -136,8 +141,10 @@ export async function GET() {
 
     const xml = await res.text();
     const projects = parseRssProjects(xml);
-    // # NEW FEATURE START - Limit to last 9 projects on the landing page
-    const limited = projects.slice(-9);
+    // # NEW FEATURE START - Return the newest 9 projects on the landing page.
+    // RSS feed items are ordered newest-first by Behance, so slicing the first 9
+    // gives the most recent projects.
+    const limited = projects.slice(0, 9);
     // # NEW FEATURE END
 
     // # NEW FEATURE START - Save cache

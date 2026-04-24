@@ -17,7 +17,7 @@ function verifySignature(rawBody: string, signature: string | null, secret: stri
 }
 
 export async function POST(req: Request) {
-  const secret = process.env.CHARGILY_SECRET_KEY;
+  const secret = (process.env.CHARGILY_SECRET_KEY || "").trim().replace(/^["']|["']$/g, "");
   if (!secret) {
     console.error("[chargily/webhook] CHARGILY_SECRET_KEY not set");
     return NextResponse.json({ error: "Server not configured" }, { status: 500 });

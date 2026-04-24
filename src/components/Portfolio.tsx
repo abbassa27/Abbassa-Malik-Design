@@ -48,8 +48,9 @@ export default function Portfolio() {
       .finally(() => setLoading(false));
   }, []);
 
-  // # NEW FEATURE START - Limit landing-page grid to last 9 projects
-  const display = projects.length > 0 ? projects.slice(-9) : [];
+  // # NEW FEATURE START - Show the newest 9 projects on the landing-page grid.
+  // The API already returns them sorted newest-first, so we slice the first 9.
+  const display = projects.length > 0 ? projects.slice(0, 9) : [];
   // # NEW FEATURE END
 
 

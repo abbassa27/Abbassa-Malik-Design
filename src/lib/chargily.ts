@@ -60,14 +60,23 @@ export type ChargilyCustomer = {
 const DEFAULT_BASE_URL = "https://pay.chargily.net/api/v2";
 
 function getBaseUrl(): string {
-  return process.env.CHARGILY_API_URL || DEFAULT_BASE_URL;
+  return (process.env.CHARGILY_API_URL || DEFAULT_BASE_URL).trim().replace(/\/$/, "");
 }
 
 function getSecretKey(): string {
-  const key = process.env.CHARGILY_SECRET_KEY;
+  // .trim() defends against accidental whitespace when the key is pasted into
+  // `.env.local` with spaces around `=` (e.g. `CHARGILY_SECRET_KEY = test_sk_...`)
+  // which otherwise produces an "Unauthenticated" response from Chargily.
+  const raw = process.env.CHARGILY_SECRET_KEY || "";
+  const key = raw.trim().replace(/^["']|["']$/g, "");
   if (!key) {
     throw new Error(
       "CHARGILY_SECRET_KEY is not configured. Set it in your environment (.env.local or Vercel Project Settings)."
+    );
+  }
+  if (!/^(test|live)_sk_/.test(key)) {
+    throw new Error(
+      "CHARGILY_SECRET_KEY looks invalid. It must start with 'test_sk_' (sandbox) or 'live_sk_' (production)."
     );
   }
   return key;
@@ -95,13 +104,22 @@ async function chargilyFetch<T>(path: string, init: RequestInit = {}): Promise<T
   }
 
   if (!res.ok) {
-    const message =
+    const baseMessage =
       (data && typeof data === "object" && "message" in data && typeof (data as { message: unknown }).message === "string"
         ? (data as { message: string }).message
         : null) ||
       (typeof data === "string" ? data : null) ||
       `Chargily API error (${res.status})`;
-    throw new Error(message);
+    const hint =
+      res.status === 401
+        ? " — Check that CHARGILY_SECRET_KEY is set correctly (no quotes or spaces) in your Vercel/Production environment and redeploy."
+        : "";
+    console.error("[chargily] API error", {
+      status: res.status,
+      path,
+      body: typeof data === "string" ? data.slice(0, 200) : data,
+    });
+    throw new Error(`${baseMessage}${hint}`);
   }
 
   return data as T;
