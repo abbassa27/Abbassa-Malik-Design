@@ -75,16 +75,22 @@ export async function POST(req: Request) {
     const failureUrl = `${baseUrl}/checkout/edahabia?payment=failed`;
     const webhookEndpoint = `${baseUrl}/api/chargily/webhook`;
 
+const secretKey = process.env.CHARGILY_SECRET_KEY;
+
+if (!secretKey) {
+  throw new Error("❌ CHARGILY_SECRET_KEY is missing in ENV");
+}
+
 const res = await fetch("https://api.chargily.com/v2/checkouts", {
   method: "POST",
   headers: {
-    Authorization: `Bearer ${process.env.CHARGILY_SECRET_KEY}`,
+    Authorization: `Bearer ${secretKey}`,
     "Content-Type": "application/json",
-    "Accept": "application/json",
+    Accept: "application/json",
   },
   body: JSON.stringify({
     amount: 100000,
-    currency: "dzd",
+    currency: "DZD",
     payment_method: "edahabia",
 
     success_url: successUrl,
@@ -93,9 +99,9 @@ const res = await fetch("https://api.chargily.com/v2/checkouts", {
     description: "Book design package",
 
     metadata: {
-      name: body.name,
-      email: body.email,
-      phone: body.phone,
+      customer_name: body.name,
+      customer_email: body.email,
+      customer_phone: body.phone,
     },
   }),
 });
@@ -125,4 +131,3 @@ if (!res.ok) {
   }
 }
 // # NEW FEATURE END
-// TEST CHANGE
