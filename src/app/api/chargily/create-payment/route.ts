@@ -77,12 +77,12 @@ export async function POST(req: Request) {
 
     const checkout = await createCheckout({
   amount: 100000,
-  currency: "DZD",
+  currency: "dzd",
   payment_method: "edahabia",
 
   success_url: successUrl,
   failure_url: failureUrl,
-  webhook_endpoint: webhookEndpoint,
+  webhook_url: webhookEndpoint,
 
   description: "Book design package",
 
