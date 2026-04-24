@@ -1,6 +1,6 @@
 // # NEW FEATURE START - Chargily Pay: create-payment API route (Vercel Serverless)
 import { NextResponse } from "next/server";
-import { createCheckout, createCustomer } from "@/lib/chargily";
+import { createCheckout } from "@/lib/chargily";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -70,12 +70,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Create / find customer first so we can associate the checkout with them.
-    const customer = await createCustomer({
-      name: input.name,
-      email: input.email,
-      phone: input.phone,
-    });
+    
 
     const successUrl = `${baseUrl}/upload?payment=success&provider=chargily`;
     const failureUrl = `${baseUrl}/checkout/edahabia?payment=failed`;
@@ -85,7 +80,7 @@ export async function POST(req: Request) {
   amount: input.amount * 100,
   currency: "DZD",
   payment_method: "edahabia",
-      customer_id: customer.id,
+      
       success_url: successUrl,
       failure_url: failureUrl,
       webhook_endpoint: webhookEndpoint,
@@ -100,12 +95,11 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({
-      checkout_url: checkout.checkout_url,
-      checkout_id: checkout.id,
-      customer_id: customer.id,
-      amount: checkout.amount,
-      currency: checkout.currency,
-    });
+  checkout_url: checkout.checkout_url,
+  checkout_id: checkout.id,
+  amount: checkout.amount,
+  currency: checkout.currency,
+});
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("[chargily/create-payment] failed:", message);
