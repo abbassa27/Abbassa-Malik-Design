@@ -14,7 +14,7 @@ export type ChargilyCheckoutInput = {
   payment_method?: "edahabia" | "cib";
   success_url: string;
   failure_url?: string;
-  webhook_endpoint?: string;
+  webhook_url?: string;
   description?: string;
   locale?: "ar" | "en" | "fr";
   // Customer info — either a pre-created customer_id, or inline customer fields
