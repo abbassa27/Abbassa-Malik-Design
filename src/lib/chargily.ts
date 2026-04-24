@@ -1,24 +1,25 @@
 // # NEW FEATURE START - Chargily Pay V2 server-side client
-// Lightweight helper for Chargily Pay V2 API
-// Works on Next.js App Router and Vercel Serverless
+// Lightweight helper for Chargily Pay V2 API (https://dev.chargily.com/pay-v2)
+// Uses fetch() so it works out of the box on Vercel Serverless Functions and
+// the Next.js App Router runtime without adding any extra dependency.
 
 export type ChargilyItem = {
-  price: string;
+  price: string;   // price object id from dashboard (optional if using amount)
   quantity: number;
 };
 
 export type ChargilyCheckoutInput = {
-  amount: number;
-  currency?: string;
+  amount: number;           // integer, in the smallest unit of the currency
+  currency?: string;        // "dzd" by default (required for Edahabia / CIB)
   payment_method?: "edahabia" | "cib";
   success_url: string;
   failure_url?: string;
-  webhook_endpoint?: string;
   webhook_url?: string;
   description?: string;
   locale?: "ar" | "en" | "fr";
+  // Customer info — either a pre-created customer_id, or inline customer fields
   customer_id?: string;
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, string | number | boolean>;
 };
 
 export type ChargilyCheckout = {
@@ -46,7 +47,7 @@ export type ChargilyCustomerInput = {
     state?: string;
     address?: string;
   };
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, string | number | boolean>;
 };
 
 export type ChargilyCustomer = {
@@ -58,6 +59,11 @@ export type ChargilyCustomer = {
 
 const DEFAULT_BASE_URL = "https://api.chargily.com/v2";
 
+function getBaseUrl(): string {
+  return "https://api.chargily.com/v2";
+}
+
+
 function getSecretKey(): string {
   const key = process.env.CHARGILY_SECRET_KEY;
   if (!key) {
@@ -68,8 +74,8 @@ function getSecretKey(): string {
   return key;
 }
 
-async function chargilyFetch(path: string, init: RequestInit = {}): Promise<any> {
-  const res = await fetch(`${DEFAULT_BASE_URL}${path}`, {
+async function chargilyFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const res = await fetch(`https://api.chargily.com/v2${path}`, {
     method: init.method || "GET",
     headers: {
       "Content-Type": "application/json",
@@ -79,21 +85,22 @@ async function chargilyFetch(path: string, init: RequestInit = {}): Promise<any>
   });
 
   const text = await res.text();
+  console.log("CHARGILY RESPONSE:", text);
 
-  let json: any;
+  let json;
   try {
-    json = text ? JSON.parse(text) : {};
+    json = JSON.parse(text);
   } catch {
-    throw new Error(`Invalid JSON response from Chargily: ${text}`);
+    throw new Error("Invalid JSON: " + text);
   }
 
   if (!res.ok) {
+    console.error("❌ Chargily error FULL:", json);
+
     const errorMessage =
       json?.error?.message ||
       json?.message ||
-      json?.error ||
-      JSON.stringify(json) ||
-      `Chargily request failed with status ${res.status}`;
+      JSON.stringify(json);
 
     throw new Error(errorMessage);
   }
@@ -102,44 +109,26 @@ async function chargilyFetch(path: string, init: RequestInit = {}): Promise<any>
 }
 
 export async function createCustomer(input: ChargilyCustomerInput): Promise<ChargilyCustomer> {
-  return chargilyFetch("/customers", {
+  return chargilyFetch<ChargilyCustomer>("/customers", {
     method: "POST",
     body: JSON.stringify(input),
   });
 }
 
 export async function createCheckout(input: ChargilyCheckoutInput): Promise<ChargilyCheckout> {
-  const payload: any = {
-    amount: input.amount,
-    currency: input.currency || "dzd",
-    payment_method: input.payment_method || "edahabia",
-    success_url: input.success_url,
-    description: input.description,
-    locale: input.locale,
-    customer_id: input.customer_id,
-    metadata: input.metadata,
-  };
-
-  if (input.failure_url) payload.failure_url = input.failure_url;
-
-  if (input.webhook_endpoint) {
-    payload.webhook_endpoint = input.webhook_endpoint;
-  } else if (input.webhook_url) {
-    payload.webhook_endpoint = input.webhook_url;
-  }
-
-  return chargilyFetch("/checkouts", {
+  return chargilyFetch<ChargilyCheckout>("/checkouts", {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify(input),
   });
 }
 
 export async function getCheckout(id: string): Promise<ChargilyCheckout> {
-  return chargilyFetch(`/checkouts/${encodeURIComponent(id)}`, {
+  return chargilyFetch<ChargilyCheckout>(`/checkouts/${encodeURIComponent(id)}`, {
     method: "GET",
   });
 }
 
+// Constant-time string comparison to protect against timing attacks.
 export function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let result = 0;
