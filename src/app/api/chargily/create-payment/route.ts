@@ -1,6 +1,6 @@
 // # NEW FEATURE START - Chargily Pay: create-payment API route (Vercel Serverless)
 import { NextResponse } from "next/server";
-import { createCheckout } from "@/lib/chargily";
+
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -75,29 +75,48 @@ export async function POST(req: Request) {
     const failureUrl = `${baseUrl}/checkout/edahabia?payment=failed`;
     const webhookEndpoint = `${baseUrl}/api/chargily/webhook`;
 
-    const checkout = await createCheckout({
-  amount: 100000,
-  currency: "dzd",
-  payment_method: "edahabia",
-
-  success_url: successUrl,
-  failure_url: failureUrl,
-  webhook_url: webhookEndpoint,
-
-  description: "Book design package",
-
-  metadata: {
-    name: body.name,
-    email: body.email,
-    phone: body.phone,
+const res = await fetch("https://api.chargily.com/v2/checkouts", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.CHARGILY_SECRET_KEY}`,
+    "Content-Type": "application/json",
+    "Accept": "application/json",
   },
+  body: JSON.stringify({
+    amount: 100000,
+    currency: "dzd",
+    payment_method: "edahabia",
+
+    success_url: successUrl,
+    failure_url: failureUrl,
+
+    description: "Book design package",
+
+    metadata: {
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+    },
+  }),
 });
 
-    return NextResponse.json({
-  checkout_url: checkout.checkout_url,
-  checkout_id: checkout.id,
-  amount: checkout.amount,
-  currency: checkout.currency,
+const text = await res.text();
+console.log("CHARGILY RAW:", text);
+
+let json;
+try {
+  json = JSON.parse(text);
+} catch {
+  return NextResponse.json({ error: text }, { status: 500 });
+}
+
+if (!res.ok) {
+  return NextResponse.json({ error: json }, { status: 500 });
+}
+
+ return NextResponse.json({
+  checkout_url: json.checkout_url,
+  checkout_id: json.id,
 });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
