@@ -60,8 +60,9 @@ export type ChargilyCustomer = {
 const DEFAULT_BASE_URL = "https://api.chargily.com/v2";
 
 function getBaseUrl(): string {
-  return process.env.CHARGILY_API_URL || DEFAULT_BASE_URL;
+  return "https://api.chargily.com/v2";
 }
+
 
 function getSecretKey(): string {
   const key = process.env.CHARGILY_SECRET_KEY;
