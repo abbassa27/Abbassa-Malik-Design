@@ -84,12 +84,20 @@ async function chargilyFetch<T>(path: string, init: RequestInit = {}): Promise<T
     body: init.body,
   });
 
-  const json = await res.json();
+ const text = await res.text();
+console.log("CHARGILY RESPONSE:", text);
 
-  if (!res.ok) {
-    console.error("❌ Chargily error:", json);
-    throw new Error(json.message || "Chargily API error");
-  }
+let json;
+try {
+  json = JSON.parse(text);
+} catch {
+  throw new Error("Invalid JSON: " + text);
+}
+
+if (!res.ok) {
+  console.error("❌ Chargily error:", json);
+  throw new Error(json.message || "Chargily API error");
+}
 
   return json;
 }
