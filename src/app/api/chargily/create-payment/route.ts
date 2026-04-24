@@ -32,16 +32,15 @@ function sanitize(input: Payload) {
   const email = String(input.email || "").trim().toLowerCase();
   const phone = String(input.phone || "").trim();
   const description = input.description ? String(input.description).trim() : "Edahabia payment";
-  const amountNum = Number(input.amount);
+  
 
   const errors: string[] = [];
   if (!name || name.length < 2) errors.push("Name is required");
   if (!email || !/^\S+@\S+\.\S+$/.test(email)) errors.push("Valid email is required");
   if (!phone || phone.replace(/\D/g, "").length < 6) errors.push("Phone is required");
-  if (!Number.isFinite(amountNum) || amountNum < 50)
-    errors.push("Amount must be at least 50 DZD (Chargily minimum)");
+  
 
-  return { name, email, phone, amount: Math.round(amountNum), description, errors };
+  return { name, email, phone, amount: 1000, description, errors };
 }
 
 export async function POST(req: Request) {
@@ -77,7 +76,7 @@ export async function POST(req: Request) {
     const webhookEndpoint = `${baseUrl}/api/chargily/webhook`;
 
     const checkout = await createCheckout({
-  amount: input.amount * 100,
+  amount: 100000, // = 100000 centimes
   currency: "DZD",
   payment_method: "edahabia",
       

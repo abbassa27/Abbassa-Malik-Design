@@ -25,7 +25,7 @@ function CheckoutForm() {
     name: "",
     email: "",
     phone: "",
-    amount: "",
+    amount: "1000",
     description: "Book design package",
   });
   const [loading, setLoading] = useState(false);
@@ -56,7 +56,7 @@ function CheckoutForm() {
     setLoading(true);
 
     try {
-      const amountNum = Number(form.amount);
+      const amountNum = 1000;
       if (!Number.isFinite(amountNum) || amountNum < 50) {
         throw new Error("Amount must be at least 50 DZD.");
       }
@@ -202,20 +202,16 @@ function CheckoutForm() {
 
           <div>
             <label className="block text-xs font-medium text-white/60 mb-1.5">
-              Amount (DZD) *
+              Package Price
             </label>
-            <input
-              required
-              type="number"
-              min={50}
-              step={1}
-              value={form.amount}
-              onChange={(e) => update("amount", e.target.value)}
-              placeholder="e.g. 5000"
-              className="w-full rounded-xl border border-white/15 bg-void px-4 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-gold/40"
-            />
+         <input
+  type="number"
+  value={1000}
+  readOnly
+  className="w-full rounded-xl border border-white/15 bg-void px-4 py-3 text-sm text-white cursor-not-allowed opacity-80"
+/>
             <p className="text-white/40 text-xs mt-1.5">
-              Chargily minimum is 50 DZD. Your card will be charged in Algerian Dinars.
+              Chargily Package is 1000 DZD. Your card will be charged in Algerian Dinars.
             </p>
           </div>
 
