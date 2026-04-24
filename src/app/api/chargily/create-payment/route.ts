@@ -1,4 +1,3 @@
-// # NEW FEATURE START - Chargily Pay: create-payment API route (Vercel Serverless)
 import { NextResponse } from "next/server";
 import { createCheckout } from "@/lib/chargily";
 
@@ -32,21 +31,27 @@ function sanitize(input: Payload) {
   const email = String(input.email || "").trim().toLowerCase();
   const phone = String(input.phone || "").trim();
   const description = input.description ? String(input.description).trim() : "Edahabia payment";
-  
 
   const errors: string[] = [];
   if (!name || name.length < 2) errors.push("Name is required");
   if (!email || !/^\S+@\S+\.\S+$/.test(email)) errors.push("Valid email is required");
   if (!phone || phone.replace(/\D/g, "").length < 6) errors.push("Phone is required");
-  
 
-  return { name, email, phone, amount: 1000, description, errors };
+  return {
+    name,
+    email,
+    phone,
+    amount: typeof input.amount === "number" ? input.amount : Number(input.amount) || 1000,
+    description,
+    errors,
+  };
 }
 
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as Payload;
     const input = sanitize(body);
+
     if (input.errors.length) {
       return NextResponse.json({ error: input.errors.join(", ") }, { status: 400 });
     }
@@ -54,8 +59,7 @@ export async function POST(req: Request) {
     if (!process.env.CHARGILY_SECRET_KEY) {
       return NextResponse.json(
         {
-          error:
-            "Chargily is not configured on the server. Please set CHARGILY_SECRET_KEY in your environment.",
+          error: "Chargily is not configured on the server. Please set CHARGILY_SECRET_KEY in your environment.",
         },
         { status: 500 }
       );
@@ -69,40 +73,34 @@ export async function POST(req: Request) {
       );
     }
 
-    
-
     const successUrl = `${baseUrl}/upload?payment=success&provider=chargily`;
     const failureUrl = `${baseUrl}/checkout/edahabia?payment=failed`;
     const webhookEndpoint = `${baseUrl}/api/chargily/webhook`;
 
     const checkout = await createCheckout({
-  amount: 100000,
-  currency: "dzd",
-  payment_method: "edahabia",
-
-  success_url: successUrl,
-  failure_url: failureUrl,
-  webhook_url: webhookEndpoint,
-
-  description: "Book design package",
-
-  metadata: {
-    name: body.name,
-    email: body.email,
-    phone: body.phone,
-  },
-});
+      amount: input.amount || 1000,
+      currency: "dzd",
+      payment_method: "edahabia",
+      success_url: successUrl,
+      failure_url: failureUrl,
+      webhook_endpoint: webhookEndpoint,
+      description: input.description || "Book design package",
+      metadata: {
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+      },
+    });
 
     return NextResponse.json({
-  checkout_url: checkout.checkout_url,
-  checkout_id: checkout.id,
-  amount: checkout.amount,
-  currency: checkout.currency,
-});
+      checkout_url: checkout.checkout_url,
+      checkout_id: checkout.id,
+      amount: checkout.amount,
+      currency: checkout.currency,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("🔥 FULL API ERROR:", err);
+    console.error("🔥 Chargily create-payment error:", err);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-// # NEW FEATURE END
