@@ -57,11 +57,12 @@ export type ChargilyCustomer = {
   phone?: string;
 };
 
-const DEFAULT_BASE_URL = "https://pay.chargily.net/api/v2";
-
-function getBaseUrl(): string {
-  return (process.env.CHARGILY_API_URL || DEFAULT_BASE_URL).trim().replace(/\/$/, "");
-}
+// Chargily Pay V2 has two distinct base URLs depending on the key:
+//   • Test mode  → https://pay.chargily.net/test/api/v2
+//   • Live mode  → https://pay.chargily.net/api/v2
+// See: https://dev.chargily.com/pay-v2/before-you-start
+const TEST_BASE_URL = "https://pay.chargily.net/test/api/v2";
+const LIVE_BASE_URL = "https://pay.chargily.net/api/v2";
 
 function getSecretKey(): string {
   // .trim() defends against accidental whitespace when the key is pasted into
@@ -82,17 +83,53 @@ function getSecretKey(): string {
   return key;
 }
 
+function getBaseUrl(): string {
+  // Allow explicit override via env (useful for staging / proxies).
+  const override = (process.env.CHARGILY_API_URL || "").trim();
+  if (override) return override.replace(/\/$/, "");
+  // Auto-detect test vs live mode from the key prefix.
+  const key = getSecretKey();
+  return key.startsWith("test_sk_") ? TEST_BASE_URL : LIVE_BASE_URL;
+}
+
 async function chargilyFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${getBaseUrl()}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${getSecretKey()}`,
-      ...(init.headers || {}),
-    },
-    // Never cache payment API calls
-    cache: "no-store",
-  });
+  const url = `${getBaseUrl()}${path}`;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getSecretKey()}`,
+        "User-Agent": "abbassa-malik-site/1.0 (+chargily-pay-v2)",
+        ...(init.headers || {}),
+      },
+      // Never cache payment API calls
+      cache: "no-store",
+    });
+  } catch (err) {
+    // Node's undici throws TypeError("fetch failed") and stuffs the real
+    // reason on err.cause. Surface it so we can tell DNS / TLS / abort apart.
+    const cause =
+      err && typeof err === "object" && "cause" in err
+        ? (err as { cause: unknown }).cause
+        : undefined;
+    const causeMsg =
+      cause && typeof cause === "object" && "message" in cause
+        ? String((cause as { message: unknown }).message)
+        : cause
+          ? String(cause)
+          : "";
+    const causeCode =
+      cause && typeof cause === "object" && "code" in cause
+        ? String((cause as { code: unknown }).code)
+        : "";
+    console.error("[chargily] network error", { url, causeCode, causeMsg, err });
+    const detail = [causeCode, causeMsg].filter(Boolean).join(" - ");
+    throw new Error(
+      `Could not reach Chargily API (${url})${detail ? ` — ${detail}` : ""}`
+    );
+  }
 
   const text = await res.text();
   let data: unknown = null;
