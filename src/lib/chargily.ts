@@ -182,6 +182,12 @@ export async function getCheckout(id: string): Promise<ChargilyCheckout> {
   });
 }
 
+export async function getCustomer(id: string): Promise<ChargilyCustomer> {
+  return chargilyFetch<ChargilyCustomer>(`/customers/${encodeURIComponent(id)}`, {
+    method: "GET",
+  });
+}
+
 // Constant-time string comparison to protect against timing attacks.
 export function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;

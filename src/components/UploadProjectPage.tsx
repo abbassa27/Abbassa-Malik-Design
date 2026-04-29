@@ -41,26 +41,38 @@ function UploadForm() {
     if (paymentStatus !== "success") return;
     if (typeof window === "undefined") return;
 
-    let saved: Partial<PaymentTransaction> & {
+    type SavedTx = {
       amount?: number | string;
       checkout_id?: string;
       name?: string;
       email?: string;
       phone?: string;
       description?: string;
-    } = {};
+    };
+
+    // 1) Read whatever the client cached (best-effort, may be empty if
+    //    sessionStorage was dropped during the cross-origin redirect).
+    let saved: SavedTx = {};
     try {
       const raw = sessionStorage.getItem("chargily_pending_payment");
-      if (raw) saved = JSON.parse(raw);
+      if (raw) saved = JSON.parse(raw) as SavedTx;
     } catch {
       /* ignore */
     }
 
-    const tx: PaymentTransaction = {
-      transactionId:
-        paymentSessionId ||
-        (saved.checkout_id as string | undefined) ||
-        `TXN-${Date.now()}`,
+    // 2) Locate the checkout id from URL params first, then a fallback
+    //    cookie set by /api/chargily/create-payment.
+    const cookieMatch =
+      typeof document !== "undefined"
+        ? document.cookie.match(/(?:^|;\s*)chargily_last_checkout=([^;]+)/)
+        : null;
+    const checkoutId =
+      paymentSessionId || saved.checkout_id || (cookieMatch ? cookieMatch[1] : "");
+
+    // 3) Render the modal immediately with whatever we have, then upgrade
+    //    the data once the server lookup resolves.
+    const initialTx: PaymentTransaction = {
+      transactionId: checkoutId || `TXN-${Date.now()}`,
       name: saved.name || "Customer",
       email: saved.email || "",
       phone: saved.phone || "",
@@ -70,16 +82,56 @@ function UploadForm() {
       description: saved.description || "Edahabia payment",
       paidAt: new Date().toLocaleString(),
     };
-
-    setPaymentTx(tx);
+    setPaymentTx(initialTx);
     setShowPaymentModal(true);
-
-    // Pre-fill upload form with the payment customer details so the flow is seamless
     setFormData((prev) => ({
       ...prev,
-      authorName: prev.authorName || tx.name,
-      email: prev.email || tx.email,
+      authorName: prev.authorName || initialTx.name,
+      email: prev.email || initialTx.email,
     }));
+
+    // 4) If we have an id, ask our server for the authoritative customer
+    //    data from Chargily and upgrade the modal.
+    if (!checkoutId) return;
+
+    type CheckoutResponse = {
+      id: string;
+      amount?: number;
+      currency?: string;
+      description?: string;
+      customer?: { name?: string | null; email?: string | null; phone?: string | null };
+    };
+
+    let cancelled = false;
+    fetch(`/api/chargily/checkout/${encodeURIComponent(checkoutId)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: CheckoutResponse | null) => {
+        if (cancelled || !data) return;
+        const c = data.customer || {};
+        const upgraded: PaymentTransaction = {
+          transactionId: data.id || initialTx.transactionId,
+          name: c.name || initialTx.name,
+          email: c.email || initialTx.email,
+          phone: c.phone || initialTx.phone,
+          amount: data.amount ?? initialTx.amount,
+          currency: (data.currency || initialTx.currency || "DZD").toUpperCase(),
+          provider: initialTx.provider,
+          description: data.description || initialTx.description,
+          paidAt: initialTx.paidAt,
+        };
+        setPaymentTx(upgraded);
+        setFormData((prev) => ({
+          ...prev,
+          authorName: prev.authorName || upgraded.name,
+          email: prev.email || upgraded.email,
+        }));
+      })
+      .catch(() => {
+        /* keep the initial tx if the lookup fails */
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [paymentStatus, paymentProvider, paymentSessionId, amount]);
   // # NEW FEATURE END
 

@@ -199,13 +199,9 @@ export default function PaymentSuccessModal({ open, onClose, onContinue, transac
                     {transaction.amount} {(transaction.currency || "DZD").toUpperCase()}
                   </dd>
                   <dt className="text-white/45">Email</dt>
-                  <dd className="text-white break-all">{transaction.email}</dd>
-                  {transaction.phone && (
-                    <>
-                      <dt className="text-white/45">Phone</dt>
-                      <dd className="text-white">{transaction.phone}</dd>
-                    </>
-                  )}
+                  <dd className="text-white break-all">{transaction.email || "—"}</dd>
+                  <dt className="text-white/45">Phone</dt>
+                  <dd className="text-white">{transaction.phone || "—"}</dd>
                   <dt className="text-white/45">Method</dt>
                   <dd className="text-white capitalize">
                     {transaction.provider || "Chargily · Edahabia"}

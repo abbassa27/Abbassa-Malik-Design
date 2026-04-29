@@ -77,9 +77,9 @@ export async function POST(req: Request) {
       phone: input.phone,
     });
 
-    const successUrl = `${baseUrl}/upload?payment=success&provider=chargily`;
     const failureUrl = `${baseUrl}/checkout/edahabia?payment=failed`;
     const webhookEndpoint = `${baseUrl}/api/chargily/webhook`;
+    const successUrl = `${baseUrl}/upload?payment=success&provider=chargily`;
 
     const checkout = await createCheckout({
       amount: input.amount,
@@ -99,13 +99,24 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({
+    // Persist the checkout id in a cookie so the success page can look up
+    // authoritative customer info from Chargily after the cross-origin
+    // redirect, even if sessionStorage is dropped by the browser.
+    const response = NextResponse.json({
       checkout_url: checkout.checkout_url,
       checkout_id: checkout.id,
       customer_id: customer.id,
       amount: checkout.amount,
       currency: checkout.currency,
     });
+    response.cookies.set("chargily_last_checkout", checkout.id, {
+      httpOnly: false, // client also reads this as a fallback
+      sameSite: "lax",
+      secure: true,
+      path: "/",
+      maxAge: 60 * 60, // 1 hour is plenty for a checkout flow
+    });
+    return response;
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("[chargily/create-payment] failed:", message);
