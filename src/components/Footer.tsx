@@ -7,6 +7,7 @@ const nav = [
   ["#testimonials", "Testimonials"],
   ["#pricing", "Pricing"],
   ["#contact", "Contact"],
+  ["/privacy-policy", "Privacy Policy"],
 ];
 
 export default function Footer() {
