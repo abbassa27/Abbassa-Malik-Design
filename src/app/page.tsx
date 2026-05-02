@@ -4,6 +4,7 @@ import Services from "@/components/Services";
 import Process from "@/components/Process";
 import Portfolio from "@/components/Portfolio";
 import Testimonials from "@/components/Testimonials";
+import MediumProjects from "@/components/MediumProjects";
 import About from "@/components/About";
 import Pricing from "@/components/Pricing";
 import CtaBar from "@/components/CtaBar";
@@ -19,6 +20,7 @@ export default function Home() {
       <Process />
       <Portfolio />
       <Testimonials />
+	  <MediumProjects />
       <About />
       <Pricing />
       <CtaBar />
