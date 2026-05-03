@@ -1,9 +1,9 @@
 export async function GET() {
   try {
     const res = await fetch(
-      "https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@abbassamalik",
+      `https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@abbassamalik&_=${Date.now()}`,
       {
-        cache: "no-store", // ✅ يمنع الكاش
+        cache: "no-store",
       }
     );
 
