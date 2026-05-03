@@ -34,15 +34,35 @@ export default function Services() {
   return (
     <section id="services" className="py-24 lg:py-32 bg-ink border-t border-white/5">
       <div className="max-w-6xl mx-auto px-6">
-        <Reveal className="text-center mb-16 lg:mb-20 max-w-2xl mx-auto">
-          <p className="text-gold text-xs font-semibold tracking-[0.28em] uppercase mb-4">What I offer</p>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-5">
-            Services
-          </h2>
-          <p className="text-white/55 text-base sm:text-lg leading-relaxed">
-            From eye-catching covers to perfectly formatted e-books — built for Amazon KDP, IngramSpark, and modern reading apps.
-          </p>
-        </Reveal>
+<Reveal className="text-center mb-16 lg:mb-20">
+
+  {/* NEW FEATURE START: Hero-Level Logo */}
+  <div className="flex justify-center mb-10">
+    <img
+      src="/logo.png"
+      alt="Abbassa Malik Logo"
+      className="w-40 h-40 sm:w-52 sm:h-52 lg:w-60 lg:h-60 object-contain
+                 opacity-100
+                 drop-shadow-[0_0_40px_rgba(212,175,55,0.6)]"
+    />
+  </div>
+  {/* NEW FEATURE END */}
+
+  <div className="max-w-2xl mx-auto">
+    <p className="text-gold text-xs font-semibold tracking-[0.28em] uppercase mb-4">
+      What I offer
+    </p>
+
+    <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-5">
+      Services
+    </h2>
+
+    <p className="text-white/55 text-base sm:text-lg leading-relaxed">
+      From eye-catching covers to perfectly formatted e-books — built for Amazon KDP, IngramSpark, and modern reading apps.
+    </p>
+  </div>
+
+</Reveal>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((s, i) => (
