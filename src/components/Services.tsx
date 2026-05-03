@@ -41,9 +41,9 @@ export default function Services() {
     <img
       src="/logo.png"
       alt="Abbassa Malik Logo"
-      className="w-28 h-28 xs:w-32 xs:h-32 sm:w-28 sm:h-28 lg:w-32 lg:h-32 object-contain
-           opacity-95
-           drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]"
+      className="w-36 h-36 sm:w-32 sm:h-32 lg:w-40 lg:h-40 object-contain
+           opacity-100
+           drop-shadow-[0_0_25px_rgba(212,175,55,0.6)]"
     />
   </div>
   {/* NEW FEATURE END */}
