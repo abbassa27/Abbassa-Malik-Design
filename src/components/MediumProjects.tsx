@@ -8,6 +8,7 @@ type Post = {
   pubDate: string;
   description: string;
   thumbnail?: string;
+  image?: string; // ✅ NEW (من API)
 };
 
 export default function MediumProjects() {
@@ -31,14 +32,11 @@ export default function MediumProjects() {
       <div className="grid md:grid-cols-3 gap-8">
 
         {posts.slice(0, 6).map((post) => {
-          // 🔥 استخراج الصورة من description
-          const imageFromDesc =
-            post.description?.match(/<img.*?src="(.*?)"/)?.[1];
-
-          // 🔥 fallback system
+          // ✅ NEW: أولوية للصورة القادمة من API
           const image =
+            post.image ||
             post.thumbnail ||
-            imageFromDesc ||
+            post.description?.match(/<img.*?src="(.*?)"/)?.[1] ||
             "/placeholder.jpg";
 
           // تنظيف النص
